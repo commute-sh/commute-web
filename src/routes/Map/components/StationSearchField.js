@@ -23,7 +23,6 @@ class StationSearchField extends React.Component {
          floatingLabelText="Recherche"
          fullWidth={true}
          style={{ width: '100%' }}
-         inputStyle={{ margin: 0, padding: 0 }}
          onChange={this.onChange.bind(this)}
        />
 
