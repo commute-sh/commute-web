@@ -4,9 +4,20 @@ const webpack = require('webpack')
 const webpackConfig = require('../build/webpack.config')
 const config = require('../config')
 const compress = require('compression')
+const expressGraphQL = require('express-graphql')
+const schema = require('./graphql/schema')
+
+require('isomorphic-fetch')
 
 const app = express()
 const paths = config.utils_paths
+
+app.use('/graphql', expressGraphQL(req => ({
+  schema,
+  graphiql: true,
+  rootValue: { request: req },
+  pretty: process.env.NODE_ENV !== 'production',
+})));
 
 // This rewrites all routes requests to the root /index.html file
 // (ignoring file requests). If you want to implement universal
@@ -15,6 +26,7 @@ app.use(require('connect-history-api-fallback')())
 
 // Apply gzip compression
 app.use(compress())
+
 
 // ------------------------------------
 // Apply Webpack HMR Middleware
@@ -53,5 +65,10 @@ if (config.env === 'development') {
   // server in production.
   app.use(express.static(paths.dist()))
 }
+
+
+//
+// Register API middleware
+// -----------------------------------------------------------------------------
 
 module.exports = app
