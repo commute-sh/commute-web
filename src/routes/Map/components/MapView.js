@@ -2,10 +2,6 @@ import React from 'react';
 import s from './MapView.css';
 import AppBar from 'material-ui/AppBar';
 
-// Needed for onTouchTap
-import injectTapEventPlugin from 'react-tap-event-plugin';
-injectTapEventPlugin();
-
 import Map from './Map';
 import StationSearch from './StationSearch';
 
