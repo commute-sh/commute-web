@@ -6,7 +6,6 @@ import ActionGrade from 'material-ui/svg-icons/action/grade';
 import Divider from 'material-ui/Divider';
 import Avatar from 'material-ui/Avatar';
 import {pinkA200, transparent} from 'material-ui/styles/colors';
-import _ from 'lodash';
 
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -50,11 +49,11 @@ class StationList extends React.Component {
       <Paper style={{ position: 'absolute', left: 0, top: 72, bottom: 0, right: 0, overflowY: 'scroll' }} zDepth={0}>
 
         {this.renderFavorites()}
-        <List>
-          {this.props.stations.map((marker, index) => (
+        <List key="station-list">
+          {this.props.stations.map((station, index) => (
             <ListItem
-              key={marker.number}
-              primaryText={marker.name}
+              key={station.number}
+              primaryText={station.name}
               insetChildren={true}
               rightAvatar={<Avatar src="http://www.material-ui.com/images/adhamdannaway-128.jpg" />}
             />
@@ -74,17 +73,17 @@ class StationList extends React.Component {
     }
 
     return [
-      <List>
-        {favoriteStations.map((marker, index) => (
+      <List key="favorite-station-list">
+        {favoriteStations.map((stations, index) => (
           <ListItem
-            key={marker.number}
-            primaryText={marker.name}
+            key={stations.number}
+            primaryText={stations.name}
             leftIcon={<ActionGrade color={pinkA200} />}
             rightAvatar={<Avatar src="http://www.material-ui.com/images/chexee-128.jpg" />}
           />
         ))}
       </List>,
-      <Divider inset={true} />
+      <Divider key="station-list-divider" inset={true} />
     ];
   }
 
