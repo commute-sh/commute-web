@@ -19,6 +19,9 @@
     "deploy": "better-npm-run deploy",
     "deploy:dev": "better-npm-run deploy:dev",
     "deploy:prod": "better-npm-run deploy:prod",
+    "deploy-docker": "better-npm-run deploy-docker",
+    "deploy-docker:dev": "better-npm-run deploy-docker:dev",
+    "deploy-docker:prod": "better-npm-run deploy-docker:prod",
     "codecov": "cat coverage/*/lcov.info | codecov"
   },
   "betterScripts": {
@@ -50,6 +53,26 @@
     },
     "deploy:prod": {
       "command": "npm run deploy",
+      "env": {
+        "NODE_ENV": "production",
+        "DEBUG": "app:*"
+      }
+    },
+    "deploy-docker": {
+      "command": "npm run lint && npm run clean && npm run compile",
+      "env": {
+        "DEBUG": "app:*"
+      }
+    },
+    "deploy-docker:dev": {
+      "command": "npm run deploy-docker",
+      "env": {
+        "NODE_ENV": "development",
+        "DEBUG": "app:*"
+      }
+    },
+    "deploy-docker:prod": {
+      "command": "npm run deploy-docker",
       "env": {
         "NODE_ENV": "production",
         "DEBUG": "app:*"
@@ -139,6 +162,7 @@
     "eslint-config-standard": "^6.0.0",
     "eslint-config-standard-react": "^4.0.0",
     "eslint-plugin-babel": "^3.2.0",
+    "eslint-plugin-flow-vars": "^0.5.0",
     "eslint-plugin-promise": "^3.0.0",
     "eslint-plugin-react": "^6.0.0",
     "eslint-plugin-standard": "^2.0.0",

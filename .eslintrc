@@ -1,27 +1,71 @@
 {
-  "parser": "babel-eslint",
-  "extends": [
+  "parser"  : "babel-eslint",
+  "extends" : [
     "standard",
     "standard-react"
   ],
-  "plugins": [
-    "babel",
-    "react",
-    "promise"
+  "plugins" : [
+    "flow-vars"
   ],
-  "env": {
+  "env"     : {
     "browser" : true
   },
-  "globals": {
+  "globals" : {
+    "Action"       : false,
     "__DEV__"      : false,
-    "__TEST__"     : false,
     "__PROD__"     : false,
-    "__COVERAGE__" : false
+    "__DEBUG__"    : false,
+    "__DEBUG_NEW_WINDOW__" : false,
+    "__BASENAME__" : false
   },
   "rules": {
-    "key-spacing"          : 0,
-    "jsx-quotes"           : [2, "prefer-single"],
-    "max-len"              : [2, 120, 2],
-    "object-curly-spacing" : [2, "always"]
+    "no-tabs": 0,
+    "camelcase": 0,
+    "keyword-spacing": 0,
+    "object-property-newline": 0,
+    "one-var": 0,
+    "no-undef": 0,
+    "wrap-iife": 0,
+    "no-fallthrough": 0,
+    "no-mixed-spaces-and-tabs": 0,
+    "func-call-spacing": 0,
+    "no-unexpected-multiline": 0,
+    "no-sparse-arrays": 0,
+    "comma-style": 0,
+    "no-constant-condition": 0,
+    "no-undef-init": 0,
+    "no-proto": 0,
+    "eol-last": 0,
+    "new-cap": 0,
+    "curly": 0,
+    "no-unused-vars": 0,
+    "semi": 0,
+    "quotes": 0,
+    "indent": 0,
+    "max-len": 0,
+    "key-spacing": 0,
+    "no-multi-spaces": 0,
+    "spaced-comment": 0,
+    "comma-dangle": 0,
+    "comma-spacing": 0,
+    "jsx-quotes": 0,
+    "arrow-parens": 0,
+    "padded-blocks": 0,
+    "space-in-parens": 0,
+    "no-trailing-spaces": 0,
+    "space-before-function-paren": 0,
+    "no-useless-computed-key": 0,
+    "no-multiple-empty-lines": 0,
+    "no-unsafe-finally": 0,
+    "operator-linebreak": 0,
+    "react/jsx-curly-spacing": 0,
+    "react/jsx-boolean-value": 0,
+    "react/jsx-space-before-closing": 0,
+    "react/prop-types": 0,
+    "react/jsx-indent": 0,
+    "react/jsx-no-bind": 0,
+    "react/jsx-indent-props": 0,
+    "flow-vars/define-flow-type": 1,
+    "flow-vars/use-flow-type": 1
   }
 }
