@@ -1,11 +1,12 @@
 import React, { PropTypes } from 'react';
 
-import Paper from 'material-ui/Paper';
-import {List, ListItem} from 'material-ui/List';
+import { List, ListItem } from 'material-ui/List';
 import ActionGrade from 'material-ui/svg-icons/action/grade';
 import Divider from 'material-ui/Divider';
 import Avatar from 'material-ui/Avatar';
-import {pinkA200, transparent} from 'material-ui/styles/colors';
+import { pinkA200, transparent } from 'material-ui/styles/colors';
+
+import _ from 'lodash'
 
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -46,11 +47,11 @@ class StationList extends React.Component {
 
   render() {
     return (
-      <Paper style={{ position: 'absolute', left: 0, top: 72, bottom: 0, right: 0, overflowY: 'scroll' }} zDepth={0}>
+      <div>
 
         {this.renderFavorites()}
         <List key="station-list">
-          {this.props.stations.map((station, index) => (
+          {_.sampleSize(this.props.stations, 10).map((station, index) => (
             <ListItem
               key={station.number}
               primaryText={station.name}
@@ -60,7 +61,7 @@ class StationList extends React.Component {
           ))}
         </List>
 
-      </Paper>
+      </div>
     );
   }
 

@@ -67,7 +67,7 @@ class Map extends React.Component {
     return (
         <WithGoogleMap
           containerElement={
-            <div style={{ zIndex: 0, position: 'absolute', top: 64, bottom: 0, left: 0, right: 0 }} />
+            <div style={{ zIndex: 0, position: 'absolute', top: 64, bottom: 0, left: 320, right: 0 }} />
           }
           mapElement={
             <div style={{ position: 'absolute', top: 0, bottom: 0, left: 0, right: 0 }} />

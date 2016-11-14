@@ -44,7 +44,7 @@ class MapView extends React.Component {
             title="Commute.sh"
             showMenuIconButton={false}
             titleStyle={{ textAlign: "center", fontFamily: 'Lobster', fontSize: 32, fontWeight: 100 }}
-            style={{ zIndex: 999 }}
+            style={{ zIndex: 999, height: 64 }}
           />
 
           <StationSearch stations={this.props.map.stations} />

@@ -3,6 +3,11 @@ import React, { PropTypes } from 'react';
 import Paper from 'material-ui/Paper';
 import StationSearchField from './StationSearchField';
 import StationList from './StationList';
+import {Tabs, Tab} from 'material-ui/Tabs';
+
+import ActionSearch from 'material-ui/svg-icons/action/search';
+import ActionFavoriteBorder from 'material-ui/svg-icons/action/favorite-border';
+
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 /// Class
@@ -35,12 +40,24 @@ class StationSearch extends React.Component {
   render() {
 
     return (
-      <Paper style={{ position: 'absolute', margin: 30, padding: '0 0 20px 0', left: 0, top: 64, bottom: 0, width: 320, zIndex: 10000 }} zDepth={2}>
+      <Paper zDepth={2} style={{ position: 'absolute', margin: 0, left: 0, top: 64, bottom: 0, width: 320, zIndex: 10000 }}>
 
-        <StationSearchField />
-        <StationList stations={this.props.stations} />
+        <Tabs>
+          <Tab icon={<ActionFavoriteBorder />} />
+          <Tab icon={<ActionSearch />} />
+        </Tabs>
+
+        <div style={{ position: 'relative', height: '100%', maxHeight: 'calc(100% - 48px)', overflowY: 'hidden' }}>
+
+          <StationSearchField />
+          <div style={{ height: '100%', maxHeight: 'calc(100% - 70px)', overflowY: 'scroll' }}>
+            <StationList stations={this.props.stations} />
+          </div>
+
+        </div>
 
       </Paper>
+
     );
 
   }
