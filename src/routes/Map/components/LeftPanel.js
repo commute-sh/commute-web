@@ -1,5 +1,6 @@
 import React, { PropTypes } from 'react';
 
+import { commute500, commute700 } from '../../../themes/commuteColors';
 import AppBar from 'material-ui/AppBar';
 import Paper from 'material-ui/Paper';
 import {Tabs, Tab} from 'material-ui/Tabs';
@@ -42,7 +43,8 @@ class LeftPanel extends React.Component {
 
     return (
       <Paper zDepth={2} style={{ position: 'absolute', margin: 0, left: 0, top: 0, bottom: 0, width: 320, zIndex: 10000 }}>
-        <div style={{ width: 320, height: 160, backgroundColor: 'white' }}>
+        <div style={{ width: 320,height: 64, backgroundColor: commute500 }}>
+          <h1 style={{ fontSize: 16, lineHeight: '64px', color: 'white', margin: 0, padding: 0, fontWeight: 400, textAlign: 'center' }}>Stations</h1>
         </div>
 {/*
         <AppBar
