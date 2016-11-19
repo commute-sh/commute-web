@@ -1,6 +1,6 @@
 import React, { PropTypes } from 'react';
 
-import { commute500, commute700 } from '../../../themes/commuteColors';
+import { commute500 } from '../../../themes/commuteColors';
 import AppBar from 'material-ui/AppBar';
 import Paper from 'material-ui/Paper';
 import {Tabs, Tab} from 'material-ui/Tabs';
@@ -8,7 +8,10 @@ import {Tabs, Tab} from 'material-ui/Tabs';
 import ActionSearch from 'material-ui/svg-icons/action/search';
 import ActionFavoriteBorder from 'material-ui/svg-icons/action/favorite-border';
 
-import StationSearch from './StationSearch'
+import FavoriteStationPanel from './FavoriteStationPanel'
+import StationSearchPanel from './StationSearchPanel'
+
+import { StationType } from '../../../types';
 
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -18,51 +21,33 @@ import StationSearch from './StationSearch'
 class LeftPanel extends React.Component {
 
   static propTypes = {
-    stations: PropTypes.arrayOf(PropTypes.shape({
-      number: PropTypes.number.isRequired,
-      name: PropTypes.string.isRequired,
-      address: PropTypes.string.isRequired,
-      position: PropTypes.shape({
-        lat: PropTypes.number.isRequired,
-        lng: PropTypes.number.isRequired,
-      }),
-      banking: PropTypes.boolean,
-      bonus: PropTypes.boolean,
-      status: PropTypes.string,
-      contract_name: PropTypes.string.isRequired,
-      bike_stands: PropTypes.number.isRequired,
-      available_bike_stands: PropTypes.number.isRequired,
-      available_bikes: PropTypes.number.isRequired,
-      last_update: PropTypes.object.isRequired,
-      distance: PropTypes.number,
-
-    })).isRequired,
+    stations: StationType.isRequired,
   };
 
   render() {
 
     return (
       <Paper zDepth={2} style={{ position: 'absolute', margin: 0, left: 0, top: 0, bottom: 0, width: 320, zIndex: 10000 }}>
-        <div style={{ width: 320,height: 64, backgroundColor: commute500 }}>
-          <h1 style={{ fontSize: 16, lineHeight: '64px', color: 'white', margin: 0, padding: 0, fontWeight: 400, textAlign: 'center' }}>Stations</h1>
-        </div>
-{/*
+
         <AppBar
-          title="Station"
+          title="Stations"
           showMenuIconButton={false}
-          titleStyle={{ textAlign: "center", fontSize: 16, fontWeight: 400, fontStyle: 'italic' }}
-          style={{ zIndex: 999, height: 32, boxShadow: 'none' }}
+          titleStyle={{ textAlign: "center", color: 'white', fontSize: 16, lineHeight: '64px', fontWeight: 100, padding: 0, margin: 0 }}
+          style={{ width: 320,height: 64, backgroundColor: commute500, boxShadow: 'none' }}
         />
-*/}
 
         <Tabs>
-          <Tab icon={<ActionFavoriteBorder />} />
-          <Tab icon={<ActionSearch />} />
+          <Tab icon={<ActionFavoriteBorder />}>
+            <div style={{ position: 'relative', height: '100%', maxHeight: 'calc(100% - 48px - 160px)', overflowY: 'hidden' }}>
+              <FavoriteStationPanel stations={this.props.stations} />
+            </div>
+          </Tab>
+          <Tab icon={<ActionSearch />}>
+            <div style={{ position: 'relative', height: '100%', maxHeight: 'calc(100% - 48px - 160px)', overflowY: 'hidden' }}>
+              <StationSearchPanel stations={this.props.stations} />
+            </div>
+          </Tab>
         </Tabs>
-
-        <div style={{ position: 'relative', height: '100%', maxHeight: 'calc(100% - 48px - 160px)', overflowY: 'hidden' }}>
-          <StationSearch stations={this.props.stations} />
-        </div>
 
       </Paper>
 

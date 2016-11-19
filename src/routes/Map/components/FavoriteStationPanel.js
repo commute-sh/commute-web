@@ -1,7 +1,6 @@
 import React, { PropTypes } from 'react';
 
-import StationSearchField from './StationSearchField';
-import StationList from './StationList';
+import FavoriteStationList from './FavoriteStationList';
 
 import { StationType } from '../../../types';
 
@@ -10,7 +9,7 @@ import { StationType } from '../../../types';
 /// Class
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
-class StationSearchPanel extends React.Component {
+class FavoriteStationPanel extends React.Component {
 
   static propTypes = {
     stations: StationType.isRequired,
@@ -20,16 +19,13 @@ class StationSearchPanel extends React.Component {
 
     return (
       <div style={{ height: '100%', maxHeight: '100%' }}>
-
-        <StationSearchField />
         <div style={{ height: '100%', maxHeight: 'calc(100% - 70px)', overflowY: 'scroll' }}>
-          <StationList stations={this.props.stations} />
+          <FavoriteStationList stations={this.props.stations} />
         </div>
-
       </div>
     );
 
   }
 }
 
-export default StationSearchPanel;
+export default FavoriteStationPanel;
