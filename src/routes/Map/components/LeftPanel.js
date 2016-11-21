@@ -30,9 +30,9 @@ class LeftPanel extends React.Component {
       <Paper zDepth={2} style={{ position: 'absolute', margin: 0, left: 0, top: 0, bottom: 0, width: 320, zIndex: 10000 }}>
 
         <AppBar
-          title="Stations"
+          title="Commute.sh"
+          titleStyle={{ textAlign: "center", fontFamily: 'Lobster', fontSize: 20, lineHeight: '64px', fontWeight: 100, padding: 0, margin: 0 }}
           showMenuIconButton={false}
-          titleStyle={{ textAlign: "center", color: 'white', fontSize: 16, lineHeight: '64px', fontWeight: 100, padding: 0, margin: 0 }}
           style={{ width: 320,height: 64, backgroundColor: commute500, boxShadow: 'none' }}
         />
 

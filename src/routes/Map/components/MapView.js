@@ -9,6 +9,8 @@ import { commute500, commute700 } from '../../../themes/commuteColors';
 
 import MuiThemeProvider from 'material-ui/styles/MuiThemeProvider';
 import getMuiTheme from 'material-ui/styles/getMuiTheme';
+import Login from './Login'
+import LoggedIn from './LoggedIn'
 
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -21,8 +23,8 @@ const commuteTheme = getMuiTheme({
     primary2Color: commute700,
   },
   appBar: {
-    height: 64,
-  },
+    height: 64
+  }
 });
 
 
@@ -33,18 +35,20 @@ const commuteTheme = getMuiTheme({
 class MapView extends React.Component {
 
   componentDidMount() {
+    this.props.actions.fetchUserInfos();
     this.props.actions.fetchStations()
   }
 
   render() {
+
     return (
       <MuiThemeProvider muiTheme={getMuiTheme(commuteTheme)}>
         <div className={s.root}>
           <AppBar
-            title="Commute.sh"
             showMenuIconButton={false}
-            titleStyle={{ textAlign: "center", fontFamily: 'Lobster', fontSize: 32, fontWeight: 100 }}
-            style={{ zIndex: 999, height: 64, marginLeft: 160 }}
+            style={{ zIndex: 999, height: 64, backgroundColor: 'transparent', boxShadow: 'none', margin: 0, padding: 0 }}
+            iconElementRight={this.props.auth.isLoggedIn ? <LoggedIn displayName={this.props.auth.displayName} style={{ marginRight: 10 }} /> : <Login />}
+            iconStyleRight={{ margin: 0, padding: 0 }}
           />
 
           <LeftPanel stations={this.props.map.stations} />

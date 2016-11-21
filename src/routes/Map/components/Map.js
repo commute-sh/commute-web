@@ -40,6 +40,13 @@ class Map extends React.Component {
         defaultZoom={15}
         defaultCenter={{ lat: 48.8145818, lng: 2.4585065 }}
         onClick={props.onMapClick}
+        options={{
+          streetViewControl: false,
+          mapTypeControlOptions: {
+            position: google.maps.ControlPosition.LEFT_BOTTOM,
+            style: google.maps.MapTypeControlStyle.DEFAULT
+          }
+        }}
       >
         <MarkerClusterer
           averageCenter
@@ -67,7 +74,7 @@ class Map extends React.Component {
     return (
         <WithGoogleMap
           containerElement={
-            <div style={{ zIndex: 0, position: 'absolute', top: 64, bottom: 0, left: 320, right: 0 }} />
+            <div style={{ zIndex: 0, position: 'absolute', top: 0, bottom: 0, left: 320, right: 0 }} />
           }
           mapElement={
             <div style={{ position: 'absolute', top: 0, bottom: 0, left: 0, right: 0 }} />
