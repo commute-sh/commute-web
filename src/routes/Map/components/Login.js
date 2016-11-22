@@ -48,7 +48,7 @@ class Login extends Component {
       <div>
 
         <IconButton
-          iconStyle={{ color: 'black', opacity: 0.8, width: 32, height: 32 }}
+          iconStyle={{ fill: 'black', opacity: 0.8, width: 32, height: 32 }}
           style={{ width: 60, height: 60, margin: '2px 16px', padding: 0 }}
           onTouchTap={this.handleTouchTap.bind(this)}
         >

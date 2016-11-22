@@ -30,8 +30,7 @@ class LoginPanel extends Component {
             </div>
           </div>
 
-          <div style={{ textAlign: 'center', margin: '20px', width: 1, backgroundColor: '#e0e0e0' }}>
-          </div>
+          <div style={{ textAlign: 'center', margin: '20px', width: 1, backgroundColor: '#e0e0e0' }} />
 
           <Paper zDepth={0} style={{ textAlign: 'center', padding: 6, flex: 1 }}>
 

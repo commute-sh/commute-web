@@ -11,6 +11,7 @@ import _ from 'lodash';
 class Map extends React.Component {
 
   static propTypes = {
+    leftPanelOpen: PropTypes.bool.isRequired,
     stations: PropTypes.arrayOf(PropTypes.shape({
       number: PropTypes.number.isRequired,
       name: PropTypes.string.isRequired,
@@ -74,7 +75,7 @@ class Map extends React.Component {
     return (
         <WithGoogleMap
           containerElement={
-            <div style={{ zIndex: 0, position: 'absolute', top: 0, bottom: 0, left: 320, right: 0 }} />
+            <div style={{ zIndex: 0, position: 'absolute', top: 0, bottom: 0, left: this.props.leftPanelOpen ? 320 : 48, right: 0 }} />
           }
           mapElement={
             <div style={{ position: 'absolute', top: 0, bottom: 0, left: 0, right: 0 }} />

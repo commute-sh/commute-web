@@ -34,6 +34,15 @@ const commuteTheme = getMuiTheme({
 
 class MapView extends React.Component {
 
+  state = {
+    leftPanelOpen: true
+  };
+
+  onLeftPanelToggle() {
+    console.log("Tapped on left panel right icon");
+    this.setState({ leftPanelOpen: !this.state.leftPanelOpen });
+  }
+
   componentDidMount() {
     this.props.actions.fetchUserInfos();
     this.props.actions.fetchStations()
@@ -47,13 +56,23 @@ class MapView extends React.Component {
           <AppBar
             showMenuIconButton={false}
             style={{ zIndex: 999, height: 64, backgroundColor: 'transparent', boxShadow: 'none', margin: 0, padding: 0 }}
-            iconElementRight={this.props.auth.isLoggedIn ? <LoggedIn displayName={this.props.auth.displayName} style={{ marginRight: 10 }} /> : <Login />}
+            iconElementRight={this.props.auth.isLoggedIn ?
+              <LoggedIn displayName={this.props.auth.displayName} style={{ marginRight: 10 }} /> :
+              <Login />
+            }
             iconStyleRight={{ margin: 0, padding: 0 }}
           />
 
-          <LeftPanel stations={this.props.map.stations} />
+          <LeftPanel
+            stations={this.props.map.stations}
+            leftPanelOpen={this.state.leftPanelOpen}
+            onLeftPanelToggle={this.onLeftPanelToggle.bind(this)}
+          />
 
-          <Map stations={this.props.map.stations} />
+          <Map
+            stations={this.props.map.stations}
+            leftPanelOpen={this.state.leftPanelOpen}
+          />
         </div>
       </MuiThemeProvider>
     );
