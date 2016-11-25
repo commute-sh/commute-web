@@ -1,18 +1,24 @@
 sudo: false
 language: node_js
 node_js:
-  - "6.1"
-
+- '6.1'
 cache:
   directories:
-    - node_modules
-
+  - node_modules
+services:
+- docker
 install:
-  - npm install
-
+- npm install
 script:
-  - npm run deploy:dev
-  - npm run deploy:prod
-
+- npm run deploy:dev
+- npm run deploy:prod
 after_success:
-  - npm run codecov
+- npm run codecov
+- docker login --email=$DOCKER_HUB_EMAIL --username=$DOCKER_HUB_USERNAME --password=$DOCKER_HUB_PASSWORD
+- export TAG=`if [ "$TRAVIS_TAG" == "master" ]; then echo "latest"; else echo $TRAVIS_BRANCH
+  ; fi`
+- docker build -f Dockerfile -t $DOCKER_IMAGE_NAME:$COMMIT .
+- if [ ! -z "$TRAVIS_TAG" ]; then docker tag $DOCKER_IMAGE_NAME:latest $DOCKER_IMAGE_NAME:$TRAVIS_TAG;
+  fi && docker push $DOCKER_IMAGE_NAME
+env:
+  secure: sIM8KwuMXY6X6751VGMf2EHpG64q6D20OuQGUddBKLy4I1KM7crR6rai9OtZj29fqIR8iR8GsKtB9GuMuf0aqObZglx0PO4reQ2aFz9HY3qkw3RYjxx5xUAu7qjVE8b1HNeeKVvWTIH48j04mbM7aEK1RaYsANRfZ8zOeBgDy7JoiAFlrRgqpmvjyW8gyoQuQXq4+QjmkRvnOJj0IuHo/jNE0NkiJ6H44ARxNGqhYfe5vmtCJb1E3llakZlFiWadFrDs8eqbNWrnxkAXCKFc0PHqpqPpqA/NxK1JdMc8HZBiBi8x1lrJWVv8MZXtqotYtXlhrcZ9ByL0R2LaXe/VOBFutQ13Ful6/VAD957jNctLGxse/CENZOaW14zZzg7HObk4Q6LKZyW7myiZGCSJ9YISTFBtio75uJ9E27wdS7/ZFFTbsHJTusJ5VhlJnu4aZQYp+tA3IKtMhgYJazTdiRkGS8PuaywHqG9dxQugS1JrveEW5acVSSDeFjBdbeYW6vcJq2bc1arj8JxDk+u/Ts6e6QfQ8MJq/WE08rVQXP7LhDN4YjxW2oopJp/45TgRbtqq0WsZPnWgGxW7ClQS1RFppM2JvZeKwg3dBK03ES7PD7EWU3Sy0P+5jNgOuWjFuKlJ5NgITicc+qny/TWvOwZDuyBD17bM8GsmjZdipQw=
