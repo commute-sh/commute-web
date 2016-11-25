@@ -6,6 +6,7 @@ const config = require('../config');
 const compress = require('compression');
 const expressGraphQL = require('express-graphql');
 const schema = require('./graphql/schema');
+const util = require('util');
 
 const passport = require('passport');
 const FacebookStrategy = require('passport-facebook').Strategy;
@@ -72,11 +73,14 @@ passport.use(new GoogleStrategy({
     clientSecret: GOOGLE_CLIENT_SECRET,
     callbackURL: `${PUBLIC_BASE_URL}/auth/google/callback`
   },
-  function(accessToken, refreshToken, profile, done) {
+  function(accessToken, refreshToken, params, profile, done) {
     profile.accessToken = accessToken;
     profile.refreshToken = refreshToken;
+    profile.id_token = params.id_token;
+    console.log("params:", params);
     console.log("accessToken:", accessToken);
     console.log("refreshToken:", refreshToken);
+    console.log("id_token:", params.id_token);
     console.log("Profile:", profile);
     done(null, profile);
   }
@@ -104,7 +108,7 @@ app.get('/auth/facebook/callback', passport.authenticate('facebook', {
 /* GET Facebook success page. */
 app.get('/auth/facebook/success', function (req, res, next) {
   console.log('[AUTH][FACEBOOK][SUCCESS] User:', req.user);
-  getCognitoID(req.user, function(err, data) {
+  getCognitoID(req.user, 'graph.facebook.com', req.user.accessToken, function(err, data) {
     if (err) {
       res.status(500);
     } else {
@@ -121,7 +125,7 @@ app.get('/auth/facebook/error', function (req, res, next) {
 
 app.get('/auth/google', passport.authenticate('google', {
   scope: [
-    'https://www.googleapis.com/auth/plus.login'
+    'openid', 'profile', 'email'
   ]
 }));
 
@@ -131,14 +135,14 @@ app.get('/auth/google', passport.authenticate('google', {
 //   login page.  Otherwise, the primary route function function will be called,
 //   which, in this example, will redirect the user to the home page.
 app.get('/auth/google/callback', passport.authenticate('google', {
-    successRedirect: '/auth/google/success',
-    failureRedirect: '/auth/google/error'
+  successRedirect: '/auth/google/success',
+  failureRedirect: '/auth/google/error'
 }));
 
 /* GET Facebook success page. */
 app.get('/auth/google/success', function (req, res, next) {
   console.log('[AUTH][GOOGLE][SUCCESS] User:', req.user);
-  getCognitoID(req.user, function(err, data) {
+  getCognitoID(req.user, 'accounts.google.com', req.user.id_token, function(err, data) {
     if (err) {
       res.status(500);
     } else {
@@ -171,9 +175,9 @@ function ensureAuthenticated(req, res, next) {
   res.status(401).json({message: "Not authenticated"});
 }
 
-function getCognitoID(user, cb) {
+function getCognitoID(user, identityProviderKey, token, cb) {
 
-  console.log('User access token:', user.accessToken);
+  console.log('User token:', token);
 
   // The parameters required to intialize the Cognito Credentials object.
   const params = {
@@ -181,7 +185,7 @@ function getCognitoID(user, cb) {
     RoleArn: IAM_ROLE_ARN,  // required
     IdentityPoolId: COGNITO_IDENTITY_POOL_ID, // required
     Logins: {
-      'graph.facebook.com': user.accessToken
+      [identityProviderKey]: token
     }
   };
 
@@ -193,12 +197,17 @@ function getCognitoID(user, cb) {
   // We can set the get method of the Credentials object to retrieve
   // the unique identifier for the end user (identityId) once the provider
   // has refreshed itself
+
+
+  console.time('credentials.get');
   credentials.get(function (err) {
+    console.timeEnd('credentials.get');
     if (err) {
       console.log("credentials.get: ".red + err, err.stack);
       cb(err);
     } else {
-      console.log("Cognito Identity Id: ".green + credentials.identityId);
+//      console.log("Cognito identity credentials: ".green + util.inspect(credentials, { showHidden: true, depth: null }));
+//      console.log("Cognito Identity Id: ".green + credentials.identityId);
       getCognitoSyncToken(credentials, cb);
     }
   });
@@ -210,7 +219,7 @@ function getCognitoSyncToken(credentials, cb) {
 
   // Other AWS SDKs will automatically use the Cognito Credentials provider
   // configured in the JavaScript SDK.
-  const cognitosync = new AWS.CognitoSync();
+  const cognitosync = new AWS.CognitoSync({ credentials: credentials });
 
   console.log("credentials.identityId:", credentials.identityId);
 
