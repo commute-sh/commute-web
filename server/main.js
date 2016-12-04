@@ -187,6 +187,10 @@ app.get('/auth/twitter/error', function (req, res, next) {
   res.send("Unable to access Twitter servers. Please check internet connection or try again later.");
 });
 
+app.post('/auth/logout', function (req, res, next) {
+  res.redirect('/');
+});
+
 app.get('/me', ensureAuthenticated, function (req, res) {
   const user = req.user;
 
