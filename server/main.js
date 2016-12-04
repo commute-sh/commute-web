@@ -58,7 +58,9 @@ app.use(passport.session());
 passport.use(new FacebookStrategy({
   clientID: FACEBOOK_APP_ID,
   clientSecret: FACEBOOK_APP_SECRET,
-  callbackURL: `${PUBLIC_BASE_URL}/auth/facebook/callback`
+  callbackURL: `${PUBLIC_BASE_URL}/auth/facebook/callback`,
+  enableProof: true,
+  profileFields: ['id', 'displayName', 'photos', 'email']
 }, function (accessToken, refreshToken, profile, done) {
   profile.accessToken = accessToken;
   profile.refreshToken = refreshToken;
@@ -155,6 +157,8 @@ app.get('/me', ensureAuthenticated, function (req, res) {
 
   const displayName = user.displayName ? user.displayName : `${firstName} ${lastName}`;
 
+  const provider = user.provider;
+
   const photo = user.photos && user.photos.length > 0 ? user.photos[0].value : undefined;
 
   const roles = [];
@@ -164,6 +168,7 @@ app.get('/me', ensureAuthenticated, function (req, res) {
     displayName: displayName,
     firstName: firstName,
     lastName: lastName,
+    provider: provider,
     photo: photo,
     roles: roles
   };
