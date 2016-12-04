@@ -108,13 +108,7 @@ app.get('/auth/facebook/callback', passport.authenticate('facebook', {
 /* GET Facebook success page. */
 app.get('/auth/facebook/success', function (req, res, next) {
   console.log('[AUTH][FACEBOOK][SUCCESS] User:', req.user);
-  getCognitoID(req.user, 'graph.facebook.com', req.user.accessToken, function(err, data) {
-    if (err) {
-      res.status(500);
-    } else {
-      res.redirect('/');
-    }
-  });
+  res.redirect('/');
 });
 
 /* GET Facebook error page. */
@@ -142,13 +136,7 @@ app.get('/auth/google/callback', passport.authenticate('google', {
 /* GET Facebook success page. */
 app.get('/auth/google/success', function (req, res, next) {
   console.log('[AUTH][GOOGLE][SUCCESS] User:', req.user);
-  getCognitoID(req.user, 'accounts.google.com', req.user.id_token, function(err, data) {
-    if (err) {
-      res.status(500);
-    } else {
-      res.redirect('/');
-    }
-  });
+  res.redirect('/');
 });
 
 /* GET Facebook error page. */
@@ -174,76 +162,6 @@ function ensureAuthenticated(req, res, next) {
   }
   res.status(401).json({message: "Not authenticated"});
 }
-
-function getCognitoID(user, identityProviderKey, token, cb) {
-
-  console.log('User token:', token);
-
-  // The parameters required to intialize the Cognito Credentials object.
-  const params = {
-    AccountId: AWS_ACCOUNT_ID, // required
-    RoleArn: IAM_ROLE_ARN,  // required
-    IdentityPoolId: COGNITO_IDENTITY_POOL_ID, // required
-    Logins: {
-      [identityProviderKey]: token
-    }
-  };
-
-  console.log("Params:", params);
-
-  // initialize the Credentials object with our parameters
-  const credentials = new AWS.CognitoIdentityCredentials(params);
-
-  // We can set the get method of the Credentials object to retrieve
-  // the unique identifier for the end user (identityId) once the provider
-  // has refreshed itself
-
-
-  console.time('credentials.get');
-  credentials.get(function (err) {
-    console.timeEnd('credentials.get');
-    if (err) {
-      console.log("credentials.get: ".red + err, err.stack);
-      cb(err);
-    } else {
-//      console.log("Cognito identity credentials: ".green + util.inspect(credentials, { showHidden: true, depth: null }));
-//      console.log("Cognito Identity Id: ".green + credentials.identityId);
-      getCognitoSyncToken(credentials, cb);
-    }
-  });
-
-}
-
-
-function getCognitoSyncToken(credentials, cb) {
-
-  // Other AWS SDKs will automatically use the Cognito Credentials provider
-  // configured in the JavaScript SDK.
-  const cognitosync = new AWS.CognitoSync({ credentials: credentials });
-
-  console.log("credentials.identityId:", credentials.identityId);
-
-  cognitosync.listRecords({
-    DatasetName: COGNITO_DATASET_NAME, // required
-    IdentityId: credentials.identityId,  // required
-    IdentityPoolId: COGNITO_IDENTITY_POOL_ID  // required
-  }, function (err, data) {
-    if (err) {
-      console.log("listRecords: ".red + err, err.stack);
-      cb(err);
-    } else {
-      console.log("listRecords: ".green + JSON.stringify(data, undefined, 2));
-      const cognitoSyncToken = data.SyncSessionToken;
-      const cognitoSyncCount = data.DatasetSyncCount;
-      console.log("SyncSessionToken: ".green + cognitoSyncToken); // successful response
-      console.log("DatasetSyncCount: ".green + cognitoSyncCount);
-
-      cb(undefined, data);
-    }
-  });
-
-}
-
 
 app.use('/graphql', expressGraphQL(req => ({
   schema,
