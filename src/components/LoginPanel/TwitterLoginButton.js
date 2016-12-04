@@ -6,10 +6,18 @@ import Icon from './Icon';
 
 class TwitterLoginButton extends Component {
 
+  static propTypes = {
+    url: PropTypes.string
+  };
+
+  static defaultProps = {
+    url: '/auth/twitter'
+  };
+
   render() {
     return (
       <RaisedButton
-        href="https://twitter.com"
+        href={this.props.url}
         label="Twitter"
         backgroundColor="#55acee"
         labelColor="white"

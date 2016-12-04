@@ -11,6 +11,7 @@ const util = require('util');
 const passport = require('passport');
 const FacebookStrategy = require('passport-facebook').Strategy;
 const GoogleStrategy = require('passport-google-oauth').OAuth2Strategy;
+const TwitterStrategy = require('passport-twitter').Strategy;
 
 const AWS = require('aws-sdk');
 
@@ -31,6 +32,9 @@ const FACEBOOK_APP_SECRET = process.env['FACEBOOK_APP_SECRET'];
 
 const GOOGLE_CLIENT_ID = process.env['GOOGLE_CLIENT_ID'];
 const GOOGLE_CLIENT_SECRET = process.env['GOOGLE_CLIENT_SECRET'];
+
+const TWITTER_CONSUMER_KEY = process.env['TWITTER_CONSUMER_KEY'];
+const TWITTER_CONSUMER_SECRET = process.env['TWITTER_CONSUMER_SECRET'];
 
 const SESSION_SECRET = process.env['SESSION_SECRET'];
 
@@ -83,6 +87,22 @@ passport.use(new GoogleStrategy({
     console.log("accessToken:", accessToken);
     console.log("refreshToken:", refreshToken);
     console.log("id_token:", params.id_token);
+    console.log("Profile:", profile);
+    done(null, profile);
+  }
+));
+
+passport.use(new TwitterStrategy({
+    consumerKey: TWITTER_CONSUMER_KEY,
+    consumerSecret: TWITTER_CONSUMER_SECRET,
+    callbackURL: `${PUBLIC_BASE_URL}/auth/twitter/callback`,
+    includeEmail: true
+  },
+  function(accessToken, refreshToken, profile, done) {
+    profile.accessToken = accessToken;
+    profile.refreshToken = refreshToken;
+    console.log("accessToken:", accessToken);
+    console.log("refreshToken:", refreshToken);
     console.log("Profile:", profile);
     done(null, profile);
   }
@@ -146,6 +166,26 @@ app.get('/auth/google/error', function (req, res, next) {
   res.send("Unable to access Google servers. Please check internet connection or try again later.");
 });
 
+
+/* GET Twitter page. */
+app.get('/auth/twitter', passport.authenticate('twitter'));
+
+/* GET Twitter callback page. */
+app.get('/auth/twitter/callback', passport.authenticate('twitter', {
+  successRedirect: '/auth/twitter/success',
+  failureRedirect: '/auth/twitter/error'
+}));
+
+/* GET Twitter success page. */
+app.get('/auth/twitter/success', function (req, res, next) {
+  console.log('[AUTH][TWITTER][SUCCESS] User:', req.user);
+  res.redirect('/');
+});
+
+/* GET Twitter error page. */
+app.get('/auth/twitter/error', function (req, res, next) {
+  res.send("Unable to access Twitter servers. Please check internet connection or try again later.");
+});
 
 app.get('/me', ensureAuthenticated, function (req, res) {
   const user = req.user;
