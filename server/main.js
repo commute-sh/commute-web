@@ -146,13 +146,31 @@ app.get('/auth/google/error', function (req, res, next) {
 
 
 app.get('/me', ensureAuthenticated, function (req, res) {
-  res.json({
-    email: "",
-    displayName: req.user.displayName,
-    firstName: "",
-    lastName: "",
-    roles: []
-  });
+  const user = req.user;
+
+  const email = user.emails && user.emails.length > 0 ? user.emails[0].value : undefined;
+
+  const firstName = user.name && user.name.givenName ? user.name.givenName : "";
+  const lastName = user.name && user.name.familyName ? user.name.familyName : "";
+
+  const displayName = user.displayName ? user.displayName : `${firstName} ${lastName}`;
+
+  const photo = user.photos && user.photos.length > 0 ? user.photos[0].value : undefined;
+
+  const roles = [];
+
+  const me = {
+    email: email,
+    displayName: displayName,
+    firstName: firstName,
+    lastName: lastName,
+    photo: photo,
+    roles: roles
+  };
+
+  console.log("Me:", me);
+
+  res.json(me);
 });
 
 // test authentication

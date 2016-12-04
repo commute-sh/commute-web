@@ -2,7 +2,7 @@ import React, { Component, PropTypes } from 'react';
 import { RaisedButton, MenuItem, Popover } from 'material-ui'
 import AccountCircleIcon from 'material-ui/svg-icons/action/account-circle';
 import Divider from 'material-ui/Divider';
-
+import Avatar from 'material-ui/Avatar';
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 /// Class
@@ -45,7 +45,7 @@ class LoggedIn extends Component {
         <RaisedButton
           style={this.props.style}
           label={this.props.displayName}
-          icon={<AccountCircleIcon style={{ fill: 'black', opacity: 0.8 }} />}
+          icon={this.props.photo ? <Avatar src={this.props.photo} size={24} /> : <AccountCircleIcon style={{ fill: 'black', opacity: 0.8 }} />}
           backgroundColor="white"
           labelPosition='before'
           onTouchTap={this.handleTouchTap.bind(this)}

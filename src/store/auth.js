@@ -250,6 +250,7 @@ const ACTION_HANDLERS = {
       firstName: payload.firstName,
       lastName: payload.lastName,
       email: payload.email,
+      photo: payload.photo,
       roles: payload.roles
     })
   },
@@ -267,7 +268,9 @@ const ACTION_HANDLERS = {
       statusText: 'Vous vous êtes déconnecté.',
       firstName: null,
       lastName: null,
-      email: null
+      email: null,
+      photo: null,
+      roles: []
     })
   },
   [LOGOUT_USER_FAILURE]: (state, payload) => {
@@ -276,7 +279,9 @@ const ACTION_HANDLERS = {
       statusText: 'Vous vous êtes déconnecté.',
       firstName: null,
       lastName: null,
-      email: null
+      email: null,
+      photo: null,
+      roles: []
     })
   },
   [LOGOUT_USER_SUCCESS]: (state, payload) => {
@@ -286,6 +291,7 @@ const ACTION_HANDLERS = {
       firstName: null,
       lastName: null,
       email: null,
+      photo: null,
       roles: []
     })
   },
@@ -300,6 +306,7 @@ const ACTION_HANDLERS = {
       firstName: payload.firstName,
       lastName: payload.lastName,
       email: payload.email,
+      photo: payload.photo,
       roles: payload.roles
     })
   }
