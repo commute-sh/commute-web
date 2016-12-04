@@ -10,6 +10,12 @@ import Avatar from 'material-ui/Avatar';
 
 class LoggedIn extends Component {
 
+  static propTypes = {
+    displayName: PropTypes.string.isRequired,
+    photo: PropTypes.string,
+    logoutAndRedirect: PropTypes.func.isRequired
+  }
+
   static muiName = 'FlatButton';
 
   constructor(props) {
@@ -60,7 +66,7 @@ class LoggedIn extends Component {
         >
           <MenuItem primaryText="Help" />
           <Divider />
-          <MenuItem primaryText="Sign out" />
+          <MenuItem primaryText="Sign out" onTouchTap={this.props.logoutAndRedirect} />
         </Popover>
       </div>
 

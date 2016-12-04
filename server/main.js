@@ -188,6 +188,7 @@ app.get('/auth/twitter/error', function (req, res, next) {
 });
 
 app.post('/auth/logout', function (req, res, next) {
+  req.logout();
   res.redirect('/');
 });
 

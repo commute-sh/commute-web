@@ -106,12 +106,13 @@ export function fetchUserInfosRequest () {
   }
 }
 
-export function logoutAndRedirect (redirect = '/login') {
+export function logoutAndRedirect (redirect = '/') {
 
   return function (dispatch) {
     dispatch(logoutUserRequest());
 
     return fetch('/auth/logout', {
+      method: 'post',
       credentials: 'same-origin'
     })
       .then(checkHttpStatus)

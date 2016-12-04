@@ -45,7 +45,7 @@ class MapView extends React.Component {
 
   componentDidMount() {
     this.props.actions.fetchUserInfos();
-    this.props.actions.fetchStations()
+    this.props.actions.fetchStations();
   }
 
   render() {
@@ -57,7 +57,11 @@ class MapView extends React.Component {
             showMenuIconButton={false}
             style={{ zIndex: 999, height: 64, backgroundColor: 'transparent', boxShadow: 'none', margin: 0, padding: 0 }}
             iconElementRight={this.props.auth.isLoggedIn ?
-              <LoggedIn displayName={this.props.auth.displayName} photo={this.props.auth.photo} style={{ marginRight: 10 }} /> :
+              <LoggedIn
+                displayName={this.props.auth.displayName}
+                photo={this.props.auth.photo}
+                logoutAndRedirect={this.props.actions.logoutAndRedirect.bind(this)}
+                style={{ marginRight: 10 }} /> :
               <Login />
             }
             iconStyleRight={{ margin: 0, padding: 0 }}
