@@ -36,7 +36,7 @@ class LoginForm extends Component {
 
   render() {
 
-    const { handleSubmit, handleLogin, pristine, submitting } = this.props;
+    const { handleSubmit, handleLogin, pristine, submitting, invalid } = this.props;
 
     return (
       <form onSubmit={handleSubmit(handleLogin)}>
@@ -49,7 +49,7 @@ class LoginForm extends Component {
                floatingLabelStyle={{ top: 24, fontFamily: 'Lobster' }}
                floatingLabelFocusStyle={{ top: 24, fontFamily: 'Lobster' }}
                style={{ height: 58 }}
-
+               errorStyle={{ marginTop: 6, textAlign: 'left' }}
                ref="email" withRef />
 
         <Field name="password" component={TextField}
@@ -60,12 +60,13 @@ class LoginForm extends Component {
                inputStyle={{ marginLeft: 4, marginTop: 10, fontSize: '14px' }}
                floatingLabelStyle={{ top: 34, fontFamily: 'Lobster' }}
                floatingLabelFocusStyle={{ top: 34, fontFamily: 'Lobster' }}
+               errorStyle={{ textAlign: 'left' }}
         />
 
         <RaisedButton
           type="submit"
           label="Se connecter"
-          disabled={pristine || submitting}
+          disabled={pristine || submitting || invalid}
           backgroundColor="#345d79"
           labelColor="white"
           fullWidth={true}

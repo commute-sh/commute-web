@@ -36,7 +36,7 @@ class SignUpForm extends Component {
 
   render() {
 
-    const { handleSubmit, handleSignUp, pristine, submitting } = this.props;
+    const { handleSubmit, handleSignUp, pristine, submitting, invalid } = this.props;
 
     return (
       <form onSubmit={handleSubmit(handleSignUp)}>
@@ -48,6 +48,7 @@ class SignUpForm extends Component {
                inputStyle={{ marginLeft: 4, marginTop: 4, fontSize: '14px' }}
                floatingLabelStyle={{ top: 24, fontFamily: 'Lobster' }}
                floatingLabelFocusStyle={{ top: 24, fontFamily: 'Lobster' }}
+               errorStyle={{ marginTop: 6, textAlign: 'left' }}
                style={{ height: 58 }}
 
                ref="email" withRef />
@@ -60,12 +61,13 @@ class SignUpForm extends Component {
                inputStyle={{ marginLeft: 4, marginTop: 10, fontSize: '14px' }}
                floatingLabelStyle={{ top: 34, fontFamily: 'Lobster' }}
                floatingLabelFocusStyle={{ top: 34, fontFamily: 'Lobster' }}
+               errorStyle={{ textAlign: 'left' }}
         />
 
         <RaisedButton
           type="submit"
           label="Créer votre compte"
-          disabled={pristine || submitting}
+          disabled={pristine || submitting || invalid}
           backgroundColor="#345d79"
           labelColor="white"
           fullWidth={true}
