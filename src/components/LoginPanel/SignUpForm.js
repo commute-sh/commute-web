@@ -79,7 +79,7 @@ class SignUpForm extends Component {
 
 }
 
-SignUpForm = reduxForm({
+export default reduxForm({
   form: 'signUpForm',
   initialValues: {
     email: '',
@@ -87,5 +87,3 @@ SignUpForm = reduxForm({
   },
   validate
 })(SignUpForm);
-
-export default SignUpForm;
