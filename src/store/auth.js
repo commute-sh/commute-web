@@ -29,6 +29,10 @@ export const FETCH_USER_INFOS_REQUEST = 'FETCH_USER_INFOS_REQUEST';
 export const FETCH_USER_INFOS_SUCCESS = 'FETCH_USER_INFOS_SUCCESS';
 export const FETCH_USER_INFOS_FAILURE = 'FETCH_USER_INFOS_FAILURE';
 
+export const SIGN_UP_USER_REQUEST = 'SIGN_UP_USER_REQUEST';
+export const SIGN_UP_USER_FAILURE = 'SIGN_UP_USER_FAILURE';
+export const SIGN_UP_USER_SUCCESS = 'SIGN_UP_USER_SUCCESS';
+
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 /// Actions
@@ -205,12 +209,75 @@ export function fetchUserInfos (done, hideErrorMessage = false) {
         dispatch(push('/login'));
       });
   }
+
+}
+
+export function signUpUser (email, password, redirect = '/') {
+  return function (dispatch) {
+    dispatch(signUpUserRequest());
+
+    const passwordHash = hash(password);
+
+    return fetch('/auth/sign-up', {
+      method: 'post',
+      credentials: 'same-origin',
+      headers: {
+        'Accept': 'application/json',
+        'Content-Type': 'application/json'
+      },
+      body: JSON.stringify({ email: email, password: passwordHash })
+    })
+      .then(checkHttpStatus)
+      .then(parseJSONWithDates)
+      .then((response) => {
+        try {
+          dispatch(signUpUserSuccess(response));
+          dispatch(push(redirect))
+        } catch (e) {
+          dispatch(signUpUserFailure({
+            response: {
+              status: 403,
+              statusText: 'Invalid token'
+            }
+          }));
+        }
+      })
+      .catch((error) => {
+        dispatch(signUpUserFailure(error))
+      })
+  }
+}
+
+export function signUpUserSuccess (user) {
+  return {
+    type: SIGN_UP_USER_SUCCESS,
+    payload: user
+  }
+}
+
+export function signUpUserFailure (err, hideErrorMessage) {
+  return {
+    type: SIGN_UP_USER_FAILURE,
+    payload: {
+      status: err.response.status,
+      statusText: err.response.statusText,
+      hideErrorMessage: hideErrorMessage
+    }
+  }
+}
+
+export function signUpUserRequest () {
+  console.log('SIGN_UP_USER_REQUEST: ' + SIGN_UP_USER_REQUEST)
+  return {
+    type: SIGN_UP_USER_REQUEST
+  }
 }
 
 export const actions = {
   loginUser,
   logoutAndRedirect,
-  fetchUserInfos
+  fetchUserInfos,
+  signUpUser
 };
 
 
@@ -310,7 +377,26 @@ const ACTION_HANDLERS = {
       photo: payload.photo,
       roles: payload.roles
     })
-  }
+  },
+  [SIGN_UP_USER_REQUEST]: (state, payload) => {
+    return Object.assign({}, state, {
+      statusText: null
+    })
+  },
+  [SIGN_UP_USER_SUCCESS]: (state, event) => {
+
+    const payload = event.payload;
+
+    return Object.assign({}, state, {
+      statusText: 'Vous avez créé votre compte avec succès.'
+    })
+  },
+  [SIGN_UP_USER_FAILURE]: (state, payload) => {
+    return Object.assign({}, state, {
+      statusText: `Create Account Error: ${payload.status} ${payload.statusText}`
+    })
+  },
+
 };
 
 export default function mapReducer (state = initialState, action) {

@@ -4,10 +4,16 @@ import FacebookLoginButton from './FacebookLoginButton'
 import GoogleLoginButton from './GoogleLoginButton'
 import TwitterLoginButton from './TwitterLoginButton'
 import Paper from 'material-ui/Paper'
-import TextField from 'material-ui/TextField';
-import RaisedButton from 'material-ui/RaisedButton';
+import RaisedButton from 'material-ui/RaisedButton'
+import LoginForm from './LoginForm'
 
 class LoginPanel extends Component {
+
+  static propTypes = {
+    signUpDialogRef: PropTypes.element,
+    handleLogin: PropTypes.func,
+    handleSignUpOpen: PropTypes.func
+  };
 
   render() {
     return (
@@ -34,49 +40,22 @@ class LoginPanel extends Component {
 
           <Paper zDepth={0} style={{ textAlign: 'center', padding: 6, flex: 1 }}>
 
-            <TextField
-              floatingLabelText="Email"
-              fullWidth={true}
-              floatingLabelFixed={true}
-              inputStyle={{ marginLeft: 4, marginTop: 4, fontSize: '14px' }}
-              floatingLabelStyle={{ top: 24, fontFamily: 'Lobster' }}
-              floatingLabelFocusStyle={{ top: 24, fontFamily: 'Lobster' }}
-              style={{ height: 58 }}
-            />
-
-            <TextField
-              floatingLabelText="Mot de passe"
-              floatingLabelFixed={true}
-              fullWidth={true}
-              type="password"
-              inputStyle={{ marginLeft: 4, marginTop: 10, fontSize: '14px' }}
-              floatingLabelStyle={{ top: 34, fontFamily: 'Lobster' }}
-              floatingLabelFocusStyle={{ top: 34, fontFamily: 'Lobster' }}
-            />
+            <LoginForm handleLogin={this.props.handleLogin} />
 
             <RaisedButton
-              href="/auth/login"
-              label="Se connecter"
-              backgroundColor="#345d79"
-              labelColor="white"
-              fullWidth={true}
-              labelStyle={{ fontFamily: 'Lobster', textTransform: 'none' }}
-              style={{ marginTop: 10, height: 44 }}
-            />
-
-            <RaisedButton
-              href="/auth/sign-up"
-              label="Sign Up"
+              label="Créer un compte"
               backgroundColor="#f39c12"
               labelColor="#222"
               fullWidth={true}
               labelStyle={{ fontFamily: 'Lobster', textTransform: 'none' }}
               style={{ marginTop: 10, height: 44 }}
+              onTouchTap={this.props.handleSignUpOpen}
             />
 
           </Paper>
 
         </div>
+
       </div>
 
     );

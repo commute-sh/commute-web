@@ -39,7 +39,7 @@ class LeftPanel extends React.Component {
   render() {
 
     return (
-      <Paper zDepth={2} style={{ position: 'absolute', margin: 0, left: this.props.leftPanelOpen ? 0 : -320, top: 0, bottom: 0, width: this.props.leftPanelOpen ? 320 : 368, zIndex: 10000, overflow: 'hidden' }}>
+      <Paper zDepth={2} style={{ position: 'absolute', margin: 0, left: this.props.leftPanelOpen ? 0 : -320, top: 0, bottom: 0, width: this.props.leftPanelOpen ? 320 : 368, zIndex: 2, overflow: 'hidden' }}>
 
         <Paper zDepth={2} style={{ position: 'absolute', margin: 0, left: 320, top: 0, bottom: 0, width: 48, backgroundColor: commute500 }}>
 
