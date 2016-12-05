@@ -27,13 +27,6 @@ class SignUpForm extends Component {
     handleSignUp: PropTypes.func
   };
 
-  componentDidMount() {
-    this.refs.email            // the Field
-      .getRenderedComponent() // on Field, returns ReduxFormMaterialUITextField
-      .getRenderedComponent() // on ReduxFormMaterialUITextField, returns TextField
-      .focus();                // on TextField
-  }
-
   render() {
 
     const { handleSubmit, handleSignUp, pristine, submitting, invalid } = this.props;
@@ -50,7 +43,6 @@ class SignUpForm extends Component {
                floatingLabelFocusStyle={{ top: 24, fontFamily: 'Lobster' }}
                errorStyle={{ marginTop: 6, textAlign: 'left' }}
                style={{ height: 58 }}
-
                ref="email" withRef />
 
         <Field name="password" component={TextField}

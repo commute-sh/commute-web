@@ -27,13 +27,6 @@ class LoginForm extends Component {
     handleLogin: PropTypes.func
   };
 
-  componentDidMount() {
-    this.refs.email            // the Field
-      .getRenderedComponent() // on Field, returns ReduxFormMaterialUITextField
-      .getRenderedComponent() // on ReduxFormMaterialUITextField, returns TextField
-      .focus();                // on TextField
-  }
-
   render() {
 
     const { handleSubmit, handleLogin, pristine, submitting, invalid } = this.props;

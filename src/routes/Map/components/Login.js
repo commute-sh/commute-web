@@ -42,6 +42,7 @@ class Login extends Component {
 
   handleSignUp({ email, password } = values) {
     this.props.signUpUser(email, password);
+    this.setState({ signUpConfirmOpen: true, signUpOpen: false });
   };
 
   handleSignUpClose(buttonClicked) {
@@ -49,7 +50,7 @@ class Login extends Component {
   };
 
   handleSignUpConfirmClose() {
-    this.setState({ signUpConfirmOpen: false, open: true });
+    this.setState({ signUpConfirmOpen: false, open: false });
   };
 
   handleTouchTap(event) {
