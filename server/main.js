@@ -8,12 +8,27 @@ const expressGraphQL = require('express-graphql');
 const schema = require('./graphql/schema');
 const util = require('util');
 
+const gravatar = require('gravatar');
+
 const passport = require('passport');
 const FacebookStrategy = require('passport-facebook').Strategy;
 const GoogleStrategy = require('passport-google-oauth').OAuth2Strategy;
 const TwitterStrategy = require('passport-twitter').Strategy;
+const LocalStrategy = require('passport-local').Strategy;
+
+const AmazonCognitoIdentity = require('amazon-cognito-identity-js');
+const CognitoUserPool = AmazonCognitoIdentity.CognitoUserPool;
+
+const bodyParser = require('body-parser');
 
 const AWS = require('aws-sdk');
+
+window = {};
+
+if (typeof localStorage === "undefined" || localStorage === null) {
+  const LocalStorage = require('node-localstorage').LocalStorage;
+  window.localStorage = new LocalStorage('./scratch');
+}
 
 require('isomorphic-fetch');
 const colors = require('colors');
@@ -22,6 +37,8 @@ const session = require('express-session');
 
 const AWS_ACCOUNT_ID = process.env['AWS_ACCOUNT_ID'];
 const AWS_REGION = process.env['AWS_REGION'];
+const COGNITO_USER_POOL_ID = process.env['COGNITO_USER_POOL_ID'];
+const COGNITO_USER_POOL_CLIENT_ID = process.env['COGNITO_USER_POOL_CLIENT_ID'];
 const COGNITO_IDENTITY_POOL_ID = process.env['COGNITO_IDENTITY_POOL_ID'];
 const COGNITO_DATASET_NAME = process.env['COGNITO_DATASET_NAME'];
 const PUBLIC_BASE_URL = process.env['PUBLIC_BASE_URL'];
@@ -58,6 +75,12 @@ app.use(session(sess));
 
 app.use(passport.initialize());
 app.use(passport.session());
+
+// parse application/x-www-form-urlencoded
+app.use(bodyParser.urlencoded({ extended: false }))
+
+// parse application/json
+app.use(bodyParser.json());
 
 passport.use(new FacebookStrategy({
   clientID: FACEBOOK_APP_ID,
@@ -108,6 +131,64 @@ passport.use(new TwitterStrategy({
   }
 ));
 
+passport.use(new LocalStrategy({
+    passReqToCallback: true,
+    session: false
+  }, function(req, username, password, done) {
+
+  const authenticationDetails = createAuthenticationDetails(username, password);
+
+  let cognitoUser = createCognitoUser(username);
+
+  cognitoUser.authenticateUser(authenticationDetails, {
+    onSuccess: function (profile) {
+      profile.accessToken = profile.getAccessToken();
+      profile.refreshToken = profile.getRefreshToken();
+      profile.id_token = profile.idToken;
+      profile.provider = 'local';
+      console.log("accessToken:", profile.accessToken);
+      console.log("refreshToken:", profile.refreshToken);
+      console.log("Profile:", profile);
+      console.log('access token + ' + profile.getAccessToken().getJwtToken());
+      /*Use the idToken for Logins Map when Federating User Pools with Cognito Identity or when passing through an Authorization Header to an API Gateway Authorizer*/
+      console.log('idToken + ' + profile.id_token.jwtToken);
+
+      cognitoUser.getUserAttributes(function(err, userAttributes) {
+        if (err) {
+         done(err);
+        } else {
+
+          console.log('userAttributes:', userAttributes);
+
+          const email = getUserAttribute(userAttributes, 'email');
+          const givenName = getUserAttribute(userAttributes, 'given_name');
+          const familyName = getUserAttribute(userAttributes, 'family_name');
+          const displayName = `${givenName} ${familyName}`;
+          const photo = gravatar.url(email, {protocol: 'https', s: '40'});
+
+          const fullProfile = Object.assign(profile, {
+            emails: [ { value: email } ],
+            name: {
+              givenName: givenName,
+              familyName: familyName
+            },
+            displayName: displayName,
+            photos: [ { value: photo } ]
+          });
+
+          done(null, fullProfile);
+        }
+      });
+
+    },
+    onFailure: function (err) {
+      done(err);
+    }
+  });
+
+  }
+));
+
 passport.serializeUser(function (user, done) {
   console.log("Serializing user:", user);
   done(null, user);
@@ -139,11 +220,7 @@ app.get('/auth/facebook/error', function (req, res, next) {
 });
 
 
-app.get('/auth/google', passport.authenticate('google', {
-  scope: [
-    'openid', 'profile', 'email'
-  ]
-}));
+app.get('/auth/google', passport.authenticate('google', { scope: [ 'openid', 'profile', 'email' ] }));
 
 // GET /auth/google/callback
 //   Use passport.authenticate() as route middleware to authenticate the
@@ -155,13 +232,13 @@ app.get('/auth/google/callback', passport.authenticate('google', {
   failureRedirect: '/auth/google/error'
 }));
 
-/* GET Facebook success page. */
+/* GET Google success page. */
 app.get('/auth/google/success', function (req, res, next) {
   console.log('[AUTH][GOOGLE][SUCCESS] User:', req.user);
   res.redirect('/');
 });
 
-/* GET Facebook error page. */
+/* GET Google error page. */
 app.get('/auth/google/error', function (req, res, next) {
   res.send("Unable to access Google servers. Please check internet connection or try again later.");
 });
@@ -187,13 +264,76 @@ app.get('/auth/twitter/error', function (req, res, next) {
   res.send("Unable to access Twitter servers. Please check internet connection or try again later.");
 });
 
+app.post('/auth/login', passport.authenticate('local', { failureRedirect: '/login' }), function(req, res) {
+  res.redirect('/');
+});
+
 app.post('/auth/logout', function (req, res, next) {
   req.logout();
   res.redirect('/');
 });
 
+app.post('/auth/sign-up', function(req, res, next) {
+
+  const username = req.body.username;
+  const email = req.body.email;
+  const password = req.body.password;
+  const givenName = req.body.givenName;
+  const familyName = req.body.familyName;
+
+  console.log('req.body:', req.body);
+
+  const attributeList = [];
+
+  attributeList.push(createCognitoUserAttribute('email', email));
+  attributeList.push(createCognitoUserAttribute('given_name', givenName));
+  attributeList.push(createCognitoUserAttribute('family_name', familyName));
+
+  createUserPool().signUp(username, password, attributeList, null, function(err, result) {
+    if (err) {
+      res.status(500).json({ message: err.message });
+    } else {
+      const cognitoUser = result.user;
+      console.log('user name is ' + cognitoUser.getUsername());
+
+      res.status(201).json(cognitoUser);
+    }
+  });
+
+});
+
+app.post('/auth/sign-up/verify-code', function(req, res, next) {
+
+  console.log('Body:', req.body);
+
+  const username = req.body.username;
+  const verificationCode = req.body.verificationCode;
+
+  createCognitoUser(username).confirmRegistration(verificationCode, true, function(err, result) {
+    if (err) {
+      console.log('err:', err);
+      res.status(500).json({ message: err.message });
+    } else {
+      console.log('callback result:', result);
+
+      res.status(200).json(result);
+    }
+  });
+
+});
+
 app.get('/me', ensureAuthenticated, function (req, res) {
+
   const user = req.user;
+
+  const me = createUser(user);
+
+  console.log("Me:", me);
+
+  res.json(me);
+});
+
+function createUser(user) {
 
   const email = user.emails && user.emails.length > 0 ? user.emails[0].value : undefined;
 
@@ -218,10 +358,46 @@ app.get('/me', ensureAuthenticated, function (req, res) {
     roles: roles
   };
 
-  console.log("Me:", me);
+  return me;
+}
 
-  res.json(me);
-});
+function createUserPool() {
+  return new AWS.CognitoIdentityServiceProvider.CognitoUserPool({
+    UserPoolId : COGNITO_USER_POOL_ID, // Your user pool id here
+    ClientId : COGNITO_USER_POOL_CLIENT_ID, // Your client id here
+  });
+}
+
+function createCognitoUser(username) {
+  return new AWS.CognitoIdentityServiceProvider.CognitoUser({
+    Username : username,
+    Pool : createUserPool()
+  })
+}
+
+function createAuthenticationDetails(username, password) {
+  return new AWS.CognitoIdentityServiceProvider.AuthenticationDetails({
+    Username : username,
+    Password : password,
+  });
+}
+
+function createCognitoUserAttribute(key, value) {
+  return new AWS.CognitoIdentityServiceProvider.CognitoUserAttribute({
+    Name : key,
+    Value : value
+  })
+}
+
+function getUserAttribute(userAttributes, key) {
+
+  const userAttribute = userAttributes.find(e => e.Name === key);
+
+  console.log('userAttribute:', userAttribute);
+
+  return userAttribute ? userAttribute.Value : undefined;
+}
+
 
 // test authentication
 function ensureAuthenticated(req, res, next) {
@@ -241,10 +417,10 @@ app.use('/graphql', expressGraphQL(req => ({
 // This rewrites all routes requests to the root /index.html file
 // (ignoring file requests). If you want to implement universal
 // rendering, you'll want to remove this middleware.
-app.use(require('connect-history-api-fallback')())
+app.use(require('connect-history-api-fallback')());
 
 // Apply gzip compression
-app.use(compress())
+app.use(compress());
 
 
 const paths = config.utils_paths
@@ -292,4 +468,4 @@ if (config.env === 'development') {
 // Register API middleware
 // -----------------------------------------------------------------------------
 
-module.exports = app
+module.exports = app;

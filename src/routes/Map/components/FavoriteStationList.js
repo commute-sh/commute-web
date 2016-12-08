@@ -5,7 +5,7 @@ import ActionGrade from 'material-ui/svg-icons/action/grade';
 import Avatar from 'material-ui/Avatar';
 import { pinkA200 } from 'material-ui/styles/colors';
 
-import { StationType } from '../../../types';
+import { StationsType } from '../../../types';
 
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -15,7 +15,7 @@ import { StationType } from '../../../types';
 class FavoriteStationList extends React.Component {
 
   static propTypes = {
-    stations: StationType.isRequired,
+    stations: StationsType.isRequired,
   };
 
   constructor(props) {

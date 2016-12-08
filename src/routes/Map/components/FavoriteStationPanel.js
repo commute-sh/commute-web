@@ -2,7 +2,7 @@ import React, { PropTypes } from 'react';
 
 import FavoriteStationList from './FavoriteStationList';
 
-import { StationType } from '../../../types';
+import { StationsType } from '../../../types';
 
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -12,7 +12,7 @@ import { StationType } from '../../../types';
 class FavoriteStationPanel extends React.Component {
 
   static propTypes = {
-    stations: StationType.isRequired,
+    stations: StationsType.isRequired,
   };
 
   render() {

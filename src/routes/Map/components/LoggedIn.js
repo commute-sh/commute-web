@@ -11,7 +11,7 @@ import Avatar from 'material-ui/Avatar';
 class LoggedIn extends Component {
 
   static propTypes = {
-    displayName: PropTypes.string.isRequired,
+    displayName: PropTypes.string,
     photo: PropTypes.string,
     logoutAndRedirect: PropTypes.func.isRequired
   }

@@ -5,7 +5,7 @@ import { RaisedButton } from 'material-ui'
 
 const validate = values => {
   const errors = {};
-  const requiredFields = [ 'email', 'password' ];
+  const requiredFields = [ 'username', 'email', 'password' ];
 
   requiredFields.forEach(field => {
     if (!values[ field ]) {
@@ -14,7 +14,7 @@ const validate = values => {
   });
 
   if (values.email && !/^[A-Z0-9._%+-]+@[A-Z0-9.-]+\.[A-Z]{2,4}$/i.test(values.email)) {
-    errors.email = 'Invalid email address'
+    errors.email = 'Adresse email invalide'
   }
 
   return errors;
@@ -33,6 +33,18 @@ class SignUpForm extends Component {
 
     return (
       <form onSubmit={handleSubmit(handleSignUp)}>
+
+        <Field name="username" component={TextField}
+               floatingLabelText="Username"
+               fullWidth={true}
+               floatingLabelFixed={true}
+               inputStyle={{ marginLeft: 4, marginTop: 4, fontSize: '14px' }}
+               floatingLabelStyle={{ top: 24, fontFamily: 'Lobster' }}
+               floatingLabelFocusStyle={{ top: 24, fontFamily: 'Lobster' }}
+               errorStyle={{ marginTop: 6, textAlign: 'left' }}
+               style={{ height: 58 }}
+               ref="username" withRef />
+
         <Field name="email" component={TextField}
                floatingLabelText="Email"
                fullWidth={true}
@@ -56,6 +68,28 @@ class SignUpForm extends Component {
                errorStyle={{ textAlign: 'left' }}
         />
 
+        <Field name="givenName" component={TextField}
+               floatingLabelText="Prénom"
+               fullWidth={true}
+               floatingLabelFixed={true}
+               inputStyle={{ marginLeft: 4, marginTop: 4, fontSize: '14px' }}
+               floatingLabelStyle={{ top: 24, fontFamily: 'Lobster' }}
+               floatingLabelFocusStyle={{ top: 24, fontFamily: 'Lobster' }}
+               errorStyle={{ marginTop: 6, textAlign: 'left' }}
+               style={{ height: 58 }}
+               ref="givenName" withRef />
+
+        <Field name="familyName" component={TextField}
+               floatingLabelText="Nom de famille"
+               fullWidth={true}
+               floatingLabelFixed={true}
+               inputStyle={{ marginLeft: 4, marginTop: 4, fontSize: '14px' }}
+               floatingLabelStyle={{ top: 24, fontFamily: 'Lobster' }}
+               floatingLabelFocusStyle={{ top: 24, fontFamily: 'Lobster' }}
+               errorStyle={{ marginTop: 6, textAlign: 'left' }}
+               style={{ height: 58 }}
+               ref="familyName" withRef />
+
         <RaisedButton
           type="submit"
           label="Créer votre compte"
@@ -76,8 +110,11 @@ class SignUpForm extends Component {
 export default reduxForm({
   form: 'signUpForm',
   initialValues: {
+    username: '',
     email: '',
-    password: ''
+    password: '',
+    givenName: '',
+    familyName: ''
   },
   validate
 })(SignUpForm);

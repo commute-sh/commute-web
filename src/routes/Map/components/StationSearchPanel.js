@@ -3,7 +3,7 @@ import React, { PropTypes } from 'react';
 import StationSearchField from './StationSearchField';
 import StationList from './StationList';
 
-import { StationType } from '../../../types';
+import { StationsType } from '../../../types';
 
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -13,7 +13,7 @@ import { StationType } from '../../../types';
 class StationSearchPanel extends React.Component {
 
   static propTypes = {
-    stations: StationType.isRequired,
+    stations: StationsType.isRequired,
   };
 
   render() {

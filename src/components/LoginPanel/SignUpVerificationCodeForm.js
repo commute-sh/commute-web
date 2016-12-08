@@ -5,7 +5,7 @@ import { RaisedButton } from 'material-ui'
 
 const validate = values => {
   const errors = {};
-  const requiredFields = [ 'username', 'password' ];
+  const requiredFields = [ 'verificationCode' ];
 
   requiredFields.forEach(field => {
     if (!values[ field ]) {
@@ -13,49 +13,42 @@ const validate = values => {
     }
   });
 
+  if (values.verificationCode && !/^[0-9]{6}$/i.test(values.verificationCode)) {
+    errors.verificationCode = 'Code de vérification invalide (6 caractères numériques)'
+  }
+
   return errors;
 };
 
 
-class LoginForm extends Component {
+class SignUpVerificationCodeForm extends Component {
 
   static propTypes = {
-    handleLogin: PropTypes.func
+    handleSignUpVerifyCode: PropTypes.func
   };
 
   render() {
 
-    const { handleSubmit, handleLogin, pristine, submitting, invalid } = this.props;
+    const { handleSubmit, handleSignUpVerifyCode, pristine, submitting, invalid } = this.props;
 
     return (
-      <form onSubmit={handleSubmit(handleLogin)}>
-        <Field name="username" component={TextField}
-               floatingLabelText="Identifiant"
+      <form onSubmit={handleSubmit(handleSignUpVerifyCode)}>
+
+        <Field name="verificationCode" component={TextField}
+               floatingLabelText="Code de vérification"
                fullWidth={true}
-               type="username"
                floatingLabelFixed={true}
                inputStyle={{ marginLeft: 4, marginTop: 4, fontSize: '14px' }}
                floatingLabelStyle={{ top: 24, fontFamily: 'Lobster' }}
                floatingLabelFocusStyle={{ top: 24, fontFamily: 'Lobster' }}
-               style={{ height: 58 }}
                errorStyle={{ marginTop: 6, textAlign: 'left' }}
-               ref="username" withRef />
-
-        <Field name="password" component={TextField}
-               floatingLabelText="Mot de passe"
-               floatingLabelFixed={true}
-               fullWidth={true}
-               type="password"
-               inputStyle={{ marginLeft: 4, marginTop: 10, fontSize: '14px' }}
-               floatingLabelStyle={{ top: 34, fontFamily: 'Lobster' }}
-               floatingLabelFocusStyle={{ top: 34, fontFamily: 'Lobster' }}
-               errorStyle={{ textAlign: 'left' }}
-        />
+               style={{ height: 58 }}
+               ref="verificationCode" withRef />
 
         <RaisedButton
           type="submit"
-          label="Se connecter"
-          disabled={pristine || submitting || invalid}
+          label="Confirmez votre code"
+          disabled={pristine || submitting || invalid}
           backgroundColor="#345d79"
           labelColor="white"
           fullWidth={true}
@@ -70,10 +63,9 @@ class LoginForm extends Component {
 }
 
 export default reduxForm({
-  form: 'loginForm',
+  form: 'signUpVerificationCodeForm',
   initialValues: {
-    email: '',
-    password: ''
+    verificationCode: ''
   },
   validate
-})(LoginForm);
+})(SignUpVerificationCodeForm);

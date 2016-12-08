@@ -1,11 +1,11 @@
 import React, { PropTypes } from 'react';
 
-import { List, ListItem } from 'material-ui/List';
-import Avatar from 'material-ui/Avatar';
+import { List } from 'material-ui/List';
+import StationItem from './StationItem';
 
 import _ from 'lodash'
 
-import { StationType } from '../../../types';
+import { StationsType } from '../../../types';
 
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -15,7 +15,7 @@ import { StationType } from '../../../types';
 class StationList extends React.Component {
 
   static propTypes = {
-    stations: StationType.isRequired,
+    stations: StationsType.isRequired,
   };
 
   constructor(props) {
@@ -30,12 +30,7 @@ class StationList extends React.Component {
     return (
       <List key="station-list">
         {_.sampleSize(this.props.stations, 10).map((station, index) => (
-          <ListItem
-            key={station.number}
-            primaryText={station.name}
-            insetChildren={true}
-            rightAvatar={<Avatar src="http://www.material-ui.com/images/adhamdannaway-128.jpg" />}
-          />
+          <StationItem key={index} index={index} station={station} />
         ))}
       </List>
     );

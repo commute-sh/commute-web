@@ -1,6 +1,6 @@
 import React, { PropTypes } from 'react';
 
-export const StationType = PropTypes.arrayOf(PropTypes.shape({
+export const StationType = PropTypes.shape({
   number: PropTypes.number.isRequired,
   name: PropTypes.string.isRequired,
   address: PropTypes.string.isRequired,
@@ -18,4 +18,6 @@ export const StationType = PropTypes.arrayOf(PropTypes.shape({
   last_update: PropTypes.object.isRequired,
   distance: PropTypes.number,
 
-}))
+});
+
+export const StationsType = PropTypes.arrayOf(StationType);

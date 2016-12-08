@@ -33,6 +33,10 @@ export const SIGN_UP_USER_REQUEST = 'SIGN_UP_USER_REQUEST';
 export const SIGN_UP_USER_FAILURE = 'SIGN_UP_USER_FAILURE';
 export const SIGN_UP_USER_SUCCESS = 'SIGN_UP_USER_SUCCESS';
 
+export const SIGN_UP_USER_VERIFY_CODE_REQUEST = 'SIGN_UP_USER_VERIFY_CODE_REQUEST';
+export const SIGN_UP_USER_VERIFY_CODE_FAILURE = 'SIGN_UP_USER_VERIFY_CODE_FAILURE';
+export const SIGN_UP_USER_VERIFY_CODE_SUCCESS = 'SIGN_UP_USER_VERIFY_CODE_SUCCESS';
+
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 /// Actions
@@ -45,25 +49,24 @@ export function loginUserSuccess (user) {
   }
 }
 
-export function loginUserFailure (err, hideErrorMessage) {
+export function loginUserFailure (err) {
   return {
     type: LOGIN_USER_FAILURE,
     payload: {
       status: err.response.status,
-      statusText: err.response.statusText,
-      hideErrorMessage: hideErrorMessage
+      statusText: err.response.statusText
     }
   }
 }
 
 export function loginUserRequest () {
-  console.log('LOGIN_USER_REQUEST: ' + LOGIN_USER_REQUEST)
+  console.log('LOGIN_USER_REQUEST: ' + LOGIN_USER_REQUEST);
   return {
     type: LOGIN_USER_REQUEST
   }
 }
 
-export function logoutUserSuccess (user) {
+export function logoutUserSuccess () {
   return {
     type: LOGOUT_USER_SUCCESS
   }
@@ -144,11 +147,9 @@ export function logoutAndRedirect (redirect = '/') {
   }
 }
 
-export function loginUser (email, password, redirect = '/') {
+export function loginUser (username, password, redirect = '/') {
   return function (dispatch) {
     dispatch(loginUserRequest());
-
-    const passwordHash = hash(password);
 
     return fetch('/auth/login', {
       method: 'post',
@@ -157,14 +158,14 @@ export function loginUser (email, password, redirect = '/') {
         'Accept': 'application/json',
         'Content-Type': 'application/json'
       },
-      body: JSON.stringify({ email: email, password: passwordHash })
+      body: JSON.stringify({ username: username, password: password })
     })
       .then(checkHttpStatus)
-      .then(parseJSONWithDates)
       .then((response) => {
         try {
           dispatch(loginUserSuccess(response));
-          dispatch(push(redirect))
+          dispatch(push(redirect));
+          dispatch(fetchUserInfos());
         } catch (e) {
           dispatch(loginUserFailure({
             response: {
@@ -180,7 +181,7 @@ export function loginUser (email, password, redirect = '/') {
   }
 }
 
-export function fetchUserInfos (done, hideErrorMessage = false) {
+export function fetchUserInfos (done) {
   return function (dispatch) {
     dispatch(fetchUserInfosRequest());
 
@@ -200,23 +201,21 @@ export function fetchUserInfos (done, hideErrorMessage = false) {
               statusText: 'Invalid token'
             }
           }));
-          dispatch(push('/login'));
+          dispatch(push('/'));
         }
       })
       .catch((error) => {
         done && done();
-        dispatch(loginUserFailure(error, hideErrorMessage));
-        dispatch(push('/login'));
+        dispatch(loginUserFailure(error));
+        dispatch(push('/'));
       });
   }
 
 }
 
-export function signUpUser (email, password, redirect = '/') {
+export function signUpUser (username, email, password, givenName, familyName, redirect = '/') {
   return function (dispatch) {
     dispatch(signUpUserRequest());
-
-    const passwordHash = hash(password);
 
     return fetch('/auth/sign-up', {
       method: 'post',
@@ -225,7 +224,7 @@ export function signUpUser (email, password, redirect = '/') {
         'Accept': 'application/json',
         'Content-Type': 'application/json'
       },
-      body: JSON.stringify({ email: email, password: passwordHash })
+      body: JSON.stringify({ username: username, email: email, password: password, givenName: givenName, familyName: familyName })
     })
       .then(checkHttpStatus)
       .then(parseJSONWithDates)
@@ -255,29 +254,92 @@ export function signUpUserSuccess (user) {
   }
 }
 
-export function signUpUserFailure (err, hideErrorMessage) {
+export function signUpUserFailure (err) {
   return {
     type: SIGN_UP_USER_FAILURE,
     payload: {
       status: err.response.status,
-      statusText: err.response.statusText,
-      hideErrorMessage: hideErrorMessage
+      statusText: err.response.statusText
     }
   }
 }
 
 export function signUpUserRequest () {
-  console.log('SIGN_UP_USER_REQUEST: ' + SIGN_UP_USER_REQUEST)
+  console.log('SIGN_UP_USER_REQUEST: ' + SIGN_UP_USER_REQUEST);
   return {
     type: SIGN_UP_USER_REQUEST
   }
 }
 
+export function signUpUserVerifyCode (username, verificationCode, redirect = '/') {
+
+  console.log("username:", username);
+  console.log("verificationCode:", verificationCode);
+
+  return function (dispatch) {
+    dispatch(signUpUserVerifyCodeRequest());
+
+    return fetch('/auth/sign-up/verify-code', {
+      method: 'post',
+      credentials: 'same-origin',
+      headers: {
+        'Accept': 'application/json',
+        'Content-Type': 'application/json'
+      },
+      body: JSON.stringify({ username: username, verificationCode: verificationCode })
+    })
+      .then(checkHttpStatus)
+      .then(parseJSONWithDates)
+      .then((response) => {
+        try {
+          dispatch(signUpUserVerifyCodeSuccess(response));
+          dispatch(push(redirect))
+        } catch (e) {
+          dispatch(signUpUserVerifyCodeFailure({
+            response: {
+              status: 403,
+              statusText: 'Invalid token'
+            }
+          }));
+        }
+      })
+      .catch((error) => {
+        dispatch(signUpUserVerifyCodeFailure(error))
+      })
+  }
+}
+
+export function signUpUserVerifyCodeSuccess (user) {
+  return {
+    type: SIGN_UP_USER_VERIFY_CODE_SUCCESS,
+    payload: user
+  }
+}
+
+export function signUpUserVerifyCodeFailure (err) {
+  return {
+    type: SIGN_UP_USER_VERIFY_CODE_FAILURE,
+    payload: {
+      status: err.response.status,
+      statusText: err.response.statusText
+    }
+  }
+}
+
+export function signUpUserVerifyCodeRequest () {
+  console.log('SIGN_UP_USER_VERIFY_CODE_REQUEST: ' + SIGN_UP_USER_VERIFY_CODE_REQUEST)
+  return {
+    type: SIGN_UP_USER_VERIFY_CODE_REQUEST
+  }
+}
+
+
 export const actions = {
   loginUser,
   logoutAndRedirect,
   fetchUserInfos,
-  signUpUser
+  signUpUser,
+  signUpUserVerifyCode
 };
 
 
@@ -288,7 +350,6 @@ export const actions = {
 const initialState =  {
   isLoggedIn: false,
   isLogging: false,
-  hideErrorMessage: false,
   statusText: null,
   displayName: null,
   firstName: null,
@@ -326,7 +387,6 @@ const ACTION_HANDLERS = {
     return Object.assign({}, state, {
       isLogging: false,
       isLoggedIn: false,
-      hideErrorMessage: payload.hideErrorMessage,
       statusText: `Authentication Error: ${payload.status} ${payload.statusText}`
     })
   },
@@ -396,7 +456,24 @@ const ACTION_HANDLERS = {
       statusText: `Create Account Error: ${payload.status} ${payload.statusText}`
     })
   },
+  [SIGN_UP_USER_VERIFY_CODE_REQUEST]: (state, payload) => {
+    return Object.assign({}, state, {
+      statusText: null
+    })
+  },
+  [SIGN_UP_USER_VERIFY_CODE_SUCCESS]: (state, event) => {
 
+    const payload = event.payload;
+
+    return Object.assign({}, state, {
+      statusText: 'Vous avez vérifié votre compte avec succès.'
+    })
+  },
+  [SIGN_UP_USER_VERIFY_CODE_FAILURE]: (state, payload) => {
+    return Object.assign({}, state, {
+      statusText: `Verify Account Error: ${payload.status} ${payload.statusText}`
+    })
+  }
 };
 
 export default function mapReducer (state = initialState, action) {

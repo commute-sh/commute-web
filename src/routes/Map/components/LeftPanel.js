@@ -13,7 +13,7 @@ import ActionFavoriteBorder from 'material-ui/svg-icons/action/favorite-border';
 import FavoriteStationPanel from './FavoriteStationPanel'
 import StationSearchPanel from './StationSearchPanel'
 
-import { StationType } from '../../../types';
+import { StationsType } from '../../../types';
 
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -25,7 +25,7 @@ class LeftPanel extends React.Component {
   static propTypes = {
     leftPanelOpen: PropTypes.bool.isRequired,
     onLeftPanelToggle: PropTypes.func.isRequired,
-    stations: StationType.isRequired,
+    stations: StationsType.isRequired,
   };
 
   onOpenFavoriteStationPanel() {
