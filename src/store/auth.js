@@ -206,7 +206,7 @@ export function fetchUserInfos (done) {
       })
       .catch((error) => {
         done && done();
-        dispatch(loginUserFailure(error));
+        dispatch(fetchUserInfosFailure(error));
         dispatch(push('/'));
       });
   }
@@ -383,11 +383,15 @@ const ACTION_HANDLERS = {
       roles: payload.roles
     })
   },
-  [LOGIN_USER_FAILURE]: (state, payload) => {
+  [LOGIN_USER_FAILURE]: (state, event) => {
+
+    const payload = event.payload;
+
+    console.log('payload:', payload);
     return Object.assign({}, state, {
       isLogging: false,
       isLoggedIn: false,
-      statusText: `Authentication Error: ${payload.status} ${payload.statusText}`
+      statusText: `Authentication Error: ${payload.status} - ${payload.statusText}`
     })
   },
   [LOGOUT_USER_REQUEST]: (state, payload) => {

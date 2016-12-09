@@ -21,10 +21,11 @@ class Login extends Component {
   static propTypes = {
     displayName: PropTypes.string,
     loginUser: PropTypes.func,
+    isLogging: PropTypes.bool,
+    statustext: PropTypes.string,
     signUpUser: PropTypes.func,
     verifyUserSignUp: PropTypes.func
   };
-
 
   state = {
     open: false,
@@ -38,10 +39,15 @@ class Login extends Component {
     this.setState({ open: false, signUpOpen: true });
   };
 
+  componentWillReceiveProps(nextProps) {
+    if (this.props.isLogging && !nextProps.isLogging && !this.props.isLoggedIn && nextProps.isLoggedIn) {
+      this.setState({ open: false });
+    }
+  }
+
   handleLogin({ username, password } = values) {
     console.log("username:", username);
 
-    this.setState({ open: false });
     this.props.loginUser(username, password);
   };
 
@@ -108,6 +114,8 @@ class Login extends Component {
           onRequestClose={this.handleRequestClose.bind(this)}
           style={{ zIndex: 3 }}>
           <LoginPanel
+            isLogging={this.props.isLogging}
+            statusText={this.props.statusText}
             handleLogin={this.handleLogin.bind(this)}
             handleSignUpOpen={this.handleSignUpOpen.bind(this)}
           />

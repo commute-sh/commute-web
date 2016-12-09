@@ -49,7 +49,6 @@ class MapView extends React.Component {
   }
 
   render() {
-
     return (
       <MuiThemeProvider muiTheme={getMuiTheme(commuteTheme)}>
         <div className={s.root}>
@@ -63,6 +62,8 @@ class MapView extends React.Component {
                 logoutAndRedirect={this.props.actions.logoutAndRedirect.bind(this)}
                 style={{ marginRight: 10 }} /> :
               <Login
+                isLogging={this.props.auth.isLogging}
+                statusText={this.props.auth.statusText}
                 loginUser={this.props.actions.loginUser.bind(this)}
                 signUpUser={this.props.actions.signUpUser.bind(this)}
                 signUpUserVerifyCode={this.props.actions.signUpUserVerifyCode.bind(this)}

@@ -7,9 +7,12 @@ import Paper from 'material-ui/Paper'
 import RaisedButton from 'material-ui/RaisedButton'
 import LoginForm from './LoginForm'
 
+
 class LoginPanel extends Component {
 
   static propTypes = {
+    isLogging: PropTypes.bool,
+    statusText: PropTypes.string,
     signUpDialogRef: PropTypes.element,
     handleLogin: PropTypes.func,
     handleSignUpOpen: PropTypes.func
@@ -40,7 +43,7 @@ class LoginPanel extends Component {
 
           <Paper zDepth={0} style={{ textAlign: 'center', padding: 6, flex: 1 }}>
 
-            <LoginForm handleLogin={this.props.handleLogin} />
+            <LoginForm handleLogin={this.props.handleLogin} isLogging={this.props.isLogging} statusText={this.props.statusText} />
 
             <RaisedButton
               label="Créer un compte"

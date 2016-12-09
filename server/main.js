@@ -157,9 +157,10 @@ passport.use(new LocalStrategy({
 
       cognitoUser.getUserAttributes(function(err, userAttributes) {
         if (err) {
-         done(err);
+          setTimeout(function() {
+            done(err);
+          }, 1000);
         } else {
-
           console.log('userAttributes:', userAttributes);
 
           const email = getUserAttribute(userAttributes, 'email');
@@ -178,13 +179,17 @@ passport.use(new LocalStrategy({
             photos: [ { value: photo } ]
           });
 
-          done(null, fullProfile);
+          setTimeout(function() {
+            done(null, fullProfile);
+          }, 1000);
         }
       });
 
     },
     onFailure: function (err) {
-      done(err);
+      setTimeout(function() {
+        done(err);
+      }, 1000);
     }
   });
 
