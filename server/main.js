@@ -23,7 +23,8 @@ const bodyParser = require('body-parser');
 
 const AWS = require('aws-sdk');
 
-window = {};
+// eslint-disable-next-line no-global-assign no-native-reassign
+// window = {};
 
 if (typeof localStorage === "undefined" || localStorage === null) {
   const LocalStorage = require('node-localstorage').LocalStorage;

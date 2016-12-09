@@ -48,7 +48,7 @@ class SignUpVerificationCodeForm extends Component {
         <RaisedButton
           type="submit"
           label="Confirmez votre code"
-          disabled={pristine || submitting || invalid}
+          disabled={pristine || submitting || invalid}
           backgroundColor="#345d79"
           labelColor="white"
           fullWidth={true}

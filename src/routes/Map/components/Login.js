@@ -46,7 +46,7 @@ class Login extends Component {
   };
 
   handleSignUp({ username, email, password, givenName, familyName } = values) {
-    const user = { username, email, givenName, familyName};
+    const user = { username, email, givenName, familyName };
     this.props.signUpUser(username, email, password, givenName, familyName);
     this.setState({ signUpVerificationCodeOpen: true, signUpOpen: false, signUpUser: user });
   };

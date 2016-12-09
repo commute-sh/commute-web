@@ -93,7 +93,7 @@ class SignUpForm extends Component {
         <RaisedButton
           type="submit"
           label="Créer votre compte"
-          disabled={pristine || submitting || invalid}
+          disabled={pristine || submitting || invalid}
           backgroundColor="#345d79"
           labelColor="white"
           fullWidth={true}
