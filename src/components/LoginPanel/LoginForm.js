@@ -2,7 +2,7 @@ import React, { Component, PropTypes } from 'react'
 import { reduxForm, Field } from 'redux-form'
 import { TextField } from 'redux-form-material-ui'
 import { RaisedButton } from 'material-ui'
-import CircularProgress from 'material-ui/CircularProgress';
+import Loader from './Loader';
 
 const validate = values => {
   const errors = {};
@@ -46,14 +46,10 @@ class LoginForm extends Component {
     return (
       <div style={{ position: 'relative' }}>
         { this.props.isLogging &&
-          <div style={{
+          <Loader style={{
             zIndex: 5,
-            background: '#fff', opacity: 0.8,
-            position: 'absolute', top: 0, bottom: 0, left: 0, right: 0,
-            display: 'flex', alignItems: 'center', justifyContent: 'center'
-          }}>
-            <CircularProgress />
-          </div>
+            position: 'absolute', top: 0, bottom: 0, left: 0, right: 0
+          }} />
         }
         {
           this.state.statusText &&
