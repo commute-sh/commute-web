@@ -2,6 +2,7 @@ import React, { Component, PropTypes } from 'react'
 import { reduxForm, Field } from 'redux-form'
 import { TextField } from 'redux-form-material-ui'
 import { RaisedButton } from 'material-ui'
+import { Loader } from './Loader'
 
 const validate = values => {
   const errors = {};
