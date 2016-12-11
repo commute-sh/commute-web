@@ -55,15 +55,17 @@ class MapView extends React.Component {
           <AppBar
             showMenuIconButton={false}
             style={{ zIndex: 1, height: 64, backgroundColor: 'transparent', boxShadow: 'none', margin: 0, padding: 0 }}
-            iconElementRight={this.props.auth.isLoggedIn ?
+            iconElementRight={this.props.userInfos.isLoggedIn ?
               <LoggedIn
-                displayName={this.props.auth.displayName}
-                photo={this.props.auth.photo}
+                displayName={this.props.userInfos.displayName}
+                photo={this.props.userInfos.photo}
                 logoutAndRedirect={this.props.actions.logoutAndRedirect.bind(this)}
                 style={{ marginRight: 10 }} /> :
               <Login
-                isLogging={this.props.auth.isLogging}
-                statusText={this.props.auth.statusText}
+                login={this.props.login}
+                userInfos={this.props.userInfos}
+                signUp={this.props.signUp}
+                signUpVerifyCode={this.props.signUpVerifyCode}
                 loginUser={this.props.actions.loginUser.bind(this)}
                 signUpUser={this.props.actions.signUpUser.bind(this)}
                 signUpUserVerifyCode={this.props.actions.signUpUserVerifyCode.bind(this)}

@@ -11,11 +11,12 @@ import LoginForm from './LoginForm'
 class LoginPanel extends Component {
 
   static propTypes = {
-    isLogging: PropTypes.bool,
-    statusText: PropTypes.string,
-    signUpDialogRef: PropTypes.element,
-    handleLogin: PropTypes.func,
-    handleSignUpOpen: PropTypes.func
+    login: PropTypes.shape({
+      isFetching: PropTypes.bool,
+      statusText: PropTypes.string
+    }),
+    onLoginSubmit: PropTypes.func,
+    onSignUpButtonTap: PropTypes.func
   };
 
   render() {
@@ -43,7 +44,7 @@ class LoginPanel extends Component {
 
           <Paper zDepth={0} style={{ textAlign: 'center', padding: 6, flex: 1 }}>
 
-            <LoginForm handleLogin={this.props.handleLogin} isLogging={this.props.isLogging} statusText={this.props.statusText} />
+            <LoginForm onLoginSubmit={this.props.onLoginSubmit} login={this.props.login} />
 
             <RaisedButton
               label="Créer un compte"
@@ -52,7 +53,7 @@ class LoginPanel extends Component {
               fullWidth={true}
               labelStyle={{ fontFamily: 'Lobster', textTransform: 'none' }}
               style={{ marginTop: 10, height: 44 }}
-              onTouchTap={this.props.handleSignUpOpen}
+              onTouchTap={this.props.onSignUpButtonTap}
             />
 
           </Paper>

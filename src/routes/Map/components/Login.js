@@ -1,13 +1,13 @@
 import React, { Component, PropTypes } from 'react';
-import { IconButton } from 'material-ui'
-import Popover from 'material-ui/Popover';
-import LoginPanel from '../../../components/LoginPanel';
-import SignUpPanel from '../../../components/LoginPanel/SignUpPanel';
-import SignUpVerificationCodePanel from '../../../components/LoginPanel/SignUpVerificationCodePanel';
 
-import AccountCircleIcon from 'material-ui/svg-icons/action/account-circle';
-import Dialog from 'material-ui/Dialog';
-import FlatButton from 'material-ui/FlatButton';
+import LoginButton from './LoginButton';
+
+import LoginPopOver from '../../../routes/Map/components/LoginPopOver';
+
+import SignUpDialog from '../../../routes/Map/components/SignUpDialog';
+import SignUpVerificationCodeDialog from '../../../routes/Map/components/SignUpVerificationCodeDialog';
+
+import ConfirmDialog from './ConfirmDialog';
 
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -21,75 +21,93 @@ class Login extends Component {
   static propTypes = {
     displayName: PropTypes.string,
     loginUser: PropTypes.func,
-    isLogging: PropTypes.bool,
-    statustext: PropTypes.string,
+    login: PropTypes.shape({
+      isFetching: PropTypes.bool,
+      statusText: PropTypes.string
+    }),
+    userInfos: PropTypes.shape({
+      isFetching: PropTypes.bool,
+      isLoggedIn: PropTypes.bool,
+      statusText: PropTypes.string
+    }),
+    signUp: PropTypes.shape({
+      isFetching: PropTypes.bool,
+      statusText: PropTypes.string
+    }),
+    signUpVerifyCode: PropTypes.shape({
+      isFetching: PropTypes.bool,
+      statusText: PropTypes.string
+    }),
     signUpUser: PropTypes.func,
     verifyUserSignUp: PropTypes.func
   };
 
   state = {
-    open: false,
-    signUpOpen: false,
-    signUpVerificationCodeOpen: false,
-    signUpConfirmOpen: false,
+    loginPopOverOpen: false,
+    signUpDialogOpen: false,
+    signUpVerificationCodeDialogOpen: false,
+    signUpConfirmDialogOpen: false,
     signUpUser: undefined
   };
 
-  handleSignUpOpen() {
-    this.setState({ open: false, signUpOpen: true });
+  onSignUpButtonTap() {
+    this.setState({ loginPopOverOpen: false, signUpDialogOpen: true });
   };
 
   componentWillReceiveProps(nextProps) {
-    if (this.props.isLogging && !nextProps.isLogging && !this.props.isLoggedIn && nextProps.isLoggedIn) {
-      this.setState({ open: false });
+    if (
+      this.props.login.isFetching && !nextProps.login.isFetching &&
+      !this.props.userInfos.isLoggedIn && nextProps.userInfos.isLoggedIn
+    ) {
+      this.setState({ loginPopOverOpen: false });
     }
   }
 
-  handleLogin({ username, password } = values) {
+  onLoginSubmit({ username, password } = values) {
     console.log("username:", username);
 
     this.props.loginUser(username, password);
   };
 
-  handleSignUp({ username, email, password, givenName, familyName } = values) {
+  onSignUpSubmit({ username, email, password, givenName, familyName } = values) {
     const user = { username, email, givenName, familyName };
     this.props.signUpUser(username, email, password, givenName, familyName);
-    this.setState({ signUpVerificationCodeOpen: true, signUpOpen: false, signUpUser: user });
+    this.setState({ signUpVerificationCodeDialogOpen: true, signUpDialogOpen: false, signUpUser: user });
   };
 
-  handleSignUpVerifyCode({ verificationCode } = values) {
+  onSignUpVerificationCodeSubmit({ verificationCode } = values) {
 
     console.log("verificationCode:", verificationCode);
 
     this.props.signUpUserVerifyCode(this.state.signUpUser.username, verificationCode);
-    this.setState({ signUpVerificationCodeOpen: false, signUpConfirmOpen: true });
+    this.setState({ signUpVerificationCodeDialogOpen: false, signUpConfirmDialogOpen: true });
   };
 
-  handleSignUpClose(buttonClicked) {
-    this.setState({ signUpOpen: false, signUpVerificationCodeOpen: buttonClicked });
+  onSignUpDialogClose(buttonClicked) {
+    this.setState({ signUpDialogOpen: false, signUpVerificationCodeDialogOpen: buttonClicked });
   };
 
-  handleSignUpVerifyCodeClose(buttonClicked) {
-    this.setState({ signUpOpen: false, signUpConfirmOpen: buttonClicked });
+  onSignUpVerifyCodeDialogClose(buttonClicked) {
+    this.setState({ signUpDialogOpen: false, signUpConfirmDialogOpen: buttonClicked });
   };
 
-  handleSignUpConfirmClose() {
-    this.setState({ signUpConfirmOpen: false, open: false });
+  onSignUpConfirmDialogClose() {
+    this.setState({ signUpConfirmDialogOpen: false, loginPopOverOpen: false });
   };
 
-  handleTouchTap(event) {
+  onLoginButtonTap(event) {
     // This prevents ghost click.
     event.preventDefault();
 
     this.setState({
-      open: true,
+      loginPopOverOpen: true,
       anchorEl: event.currentTarget,
     });
   }
 
-  handleRequestClose() {
+  onLoginPopOverClose() {
     this.setState({
-      open: false
+      loginPopOverOpen: false
     });
   }
 
@@ -98,28 +116,9 @@ class Login extends Component {
     return (
       <div>
 
-        <IconButton
-          iconStyle={{ fill: 'black', opacity: 0.8, width: 32, height: 32 }}
-          style={{ width: 60, height: 60, margin: '2px 16px', padding: 0 }}
-          onTouchTap={this.handleTouchTap.bind(this)}
-        >
-          <AccountCircleIcon />
-        </IconButton>
+        <LoginButton onLoginButtonTap={this.onLoginButtonTap.bind(this)} />
 
-        <Popover
-          open={this.state.open}
-          anchorEl={this.state.anchorEl}
-          anchorOrigin={{horizontal: 'left', vertical: 'bottom'}}
-          targetOrigin={{horizontal: 'left', vertical: 'top'}}
-          onRequestClose={this.handleRequestClose.bind(this)}
-          style={{ zIndex: 3 }}>
-          <LoginPanel
-            isLogging={this.props.isLogging}
-            statusText={this.props.statusText}
-            handleLogin={this.handleLogin.bind(this)}
-            handleSignUpOpen={this.handleSignUpOpen.bind(this)}
-          />
-        </Popover>
+        {this.renderLoginPopOver()}
 
         {this.renderSignUpDialog()}
         {this.renderSignUpVerifyCodeDialog()}
@@ -130,61 +129,68 @@ class Login extends Component {
 
   }
 
-  renderSignUpDialog() {
+  renderLoginPopOver() {
+
+    const { loginPopOverOpen, anchorEl } = this.state;
+    const { login, userInfos } = this.props;
 
     return (
-      <Dialog
-        title="Créer un compte"
-        modal={false}
-        open={this.state.signUpOpen}
-        overlayStyle={{ zIndex: 4 }}
-        actionsContainerStyle={{ padding: 20 }}
-        onRequestClose={this.handleSignUpClose.bind(this)}
-      >
-        <SignUpPanel handleSignUp={this.handleSignUp.bind(this)} />
-      </Dialog>
+      <LoginPopOver
+        open={loginPopOverOpen}
+        anchorEl={anchorEl}
+        style={{ zIndex: 3 }}
+        login={login}
+        userInfos={userInfos}
+        onClose={this.onLoginPopOverClose.bind(this)}
+        onLoginSubmit={this.onLoginSubmit.bind(this)}
+        onSignUpButtonTap={this.onSignUpButtonTap.bind(this)}
+      />
     );
+  }
 
+  renderSignUpDialog() {
+
+    const { signUpDialogOpen } = this.state;
+    const { signUp } = this.props;
+
+    return (
+      <SignUpDialog
+        title="Créer un compte"
+        open={signUpDialogOpen}
+        signUp={signUp}
+        onSubmit={this.onSignUpSubmit.bind(this)}
+        onClose={this.onSignUpDialogClose.bind(this)}
+      />
+    );
   }
 
   renderSignUpVerifyCodeDialog() {
 
-    return (
-      <Dialog
-        title="Saisir le code de vérification"
-        modal={false}
-        open={this.state.signUpVerificationCodeOpen}
-        overlayStyle={{ zIndex: 4 }}
-        actionsContainerStyle={{ padding: 20 }}
-        onRequestClose={this.handleSignUpVerifyCodeClose.bind(this)}
-      >
-        <SignUpVerificationCodePanel handleSignUpVerifyCode={this.handleSignUpVerifyCode.bind(this)} />
-      </Dialog>
-    );
+    const { signUpVerificationCodeDialogOpen } = this.state;
+    const { signUpVerifyCode } = this.props;
 
+    return (
+      <SignUpVerificationCodeDialog
+        title="Saisir le code de vérification"
+        open={signUpVerificationCodeDialogOpen}
+        signUpVerifyCode={signUpVerifyCode}
+        onSubmit={this.onSignUpVerificationCodeSubmit.bind(this)}
+        onClose={this.onSignUpVerifyCodeDialogClose.bind(this)}
+      />
+    );
   }
 
   renderSignUpConfirmDialog() {
 
-    const actions = [
-      <FlatButton
-        label="Ok"
-        primary={true}
-        onTouchTap={this.handleSignUpConfirmClose.bind(this)}
-      />
-    ];
+    const { signUpConfirmOpen } = this.state;
 
     return (
-      <Dialog
+      <ConfirmDialog
         title="Confirmation de création de compte"
-        actions={actions}
-        modal={false}
-        open={this.state.signUpConfirmOpen}
-        overlayStyle={{ zIndex: 4 }}
-        onRequestClose={this.handleSignUpConfirmClose.bind(this)}
-      >
-        Votre compte a été créé, vous pouvez maintenant vous connecter !
-      </Dialog>
+        message="Votre compte a été créé, vous pouvez maintenant vous connecter !"
+        open={signUpConfirmOpen}
+        onClose={this.onSignUpConfirmDialogClose.bind(this)}
+      />
     );
 
   }

@@ -298,12 +298,15 @@ app.post('/auth/sign-up', function(req, res, next) {
 
   createUserPool().signUp(username, password, attributeList, null, function(err, result) {
     if (err) {
-      res.status(500).json({ message: err.message });
+      setTimeout(function() {
+        res.status(500).json({message: err.message});
+      }, 1000);
     } else {
       const cognitoUser = result.user;
       console.log('user name is ' + cognitoUser.getUsername());
-
-      res.status(201).json(cognitoUser);
+      setTimeout(function() {
+        res.status(201).json(cognitoUser);
+      }, 1000);
     }
   });
 
@@ -319,11 +322,14 @@ app.post('/auth/sign-up/verify-code', function(req, res, next) {
   createCognitoUser(username).confirmRegistration(verificationCode, true, function(err, result) {
     if (err) {
       console.log('err:', err);
-      res.status(500).json({ message: err.message });
+      setTimeout(function() {
+        res.status(500).json({message: err.message});
+      }, 1000);
     } else {
       console.log('callback result:', result);
-
-      res.status(200).json(result);
+      setTimeout(function() {
+        res.status(200).json(result);
+      }, 1000);
     }
   });
 

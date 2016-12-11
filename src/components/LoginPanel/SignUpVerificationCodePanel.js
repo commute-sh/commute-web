@@ -7,6 +7,10 @@ import SignUpVerificationCodeForm from './SignUpVerificationCodeForm'
 class SignUpVerificationCodePanel extends Component {
 
   static propTypes = {
+    signUpVerifyCode: PropTypes.shape({
+      isFetching: PropTypes.bool,
+      statusText: PropTypes.string
+    }),
     handleSignUpVerifyCode: PropTypes.func
   };
 
@@ -14,7 +18,10 @@ class SignUpVerificationCodePanel extends Component {
 
     return (
       <Paper zDepth={0} style={{ textAlign: 'center', padding: 6, flex: 1 }}>
-        <SignUpVerificationCodeForm handleSignUpVerifyCode={this.props.handleSignUpVerifyCode} />
+        <SignUpVerificationCodeForm
+          handleSignUpVerifyCode={this.props.handleSignUpVerifyCode}
+          signUpVerifyCode={this.props.signUpVerifyCode}
+        />
       </Paper>
     );
 

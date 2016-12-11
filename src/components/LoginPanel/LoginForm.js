@@ -21,9 +21,11 @@ const validate = values => {
 class LoginForm extends Component {
 
   static propTypes = {
-    isLogging: PropTypes.bool,
-    statusText: PropTypes.string,
-    handleLogin: PropTypes.func
+    login: PropTypes.shape({
+      isFetching: PropTypes.bool,
+      statusText: PropTypes.string
+    }),
+    onLoginSubmit: PropTypes.func
   };
 
   state = {
@@ -31,21 +33,21 @@ class LoginForm extends Component {
   };
 
   componentWillReceiveProps(nextProps) {
-    if (nextProps.statusText && this.state.submitted ) {
+    if (nextProps.login.statusText && this.state.submitted ) {
       this.setState({ statusText: nextProps.statusText });
     }
-    if (nextProps.isLogging) {
+    if (nextProps.login.isFetching) {
       this.setState({ submitted: true });
     }
   }
 
   render() {
 
-    const { handleSubmit, handleLogin, pristine, submitting, invalid } = this.props;
+    const { handleSubmit, onLoginSubmit, pristine, submitting, invalid } = this.props;
 
     return (
       <div style={{ position: 'relative' }}>
-        { this.props.isLogging &&
+        { this.props.login.isFetching &&
           <Loader style={{
             zIndex: 5,
             position: 'absolute', top: 0, bottom: 0, left: 0, right: 0
@@ -57,7 +59,7 @@ class LoginForm extends Component {
               {this.state.statusText}
             </div>
         }
-        <form onSubmit={handleSubmit(handleLogin)}>
+        <form onSubmit={handleSubmit(onLoginSubmit)}>
           <Field name="username" component={TextField}
                  floatingLabelText="Identifiant"
                  fullWidth={true}

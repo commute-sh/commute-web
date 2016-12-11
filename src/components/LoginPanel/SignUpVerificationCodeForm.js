@@ -4,6 +4,7 @@ import { TextField } from 'redux-form-material-ui'
 import { RaisedButton } from 'material-ui'
 
 const validate = values => {
+
   const errors = {};
   const requiredFields = [ 'verificationCode' ];
 
@@ -18,45 +19,78 @@ const validate = values => {
   }
 
   return errors;
-};
 
+};
 
 class SignUpVerificationCodeForm extends Component {
 
   static propTypes = {
-    handleSignUpVerifyCode: PropTypes.func
+    signUpVerifyCode: PropTypes.shape({
+      isFetching: PropTypes.bool,
+      statusText: PropTypes.string
+    }),
+    onSubmit: PropTypes.func
   };
+
+  state = {
+    statusText: undefined
+  };
+
+  componentWillReceiveProps(nextProps) {
+    if (nextProps.signUpVerifyCode.statusText && this.state.submitted ) {
+      this.setState({ statusText: nextProps.signUpVerifyCode.statusText });
+    }
+    if (nextProps.signUpVerifyCode.isFetching) {
+      this.setState({ submitted: true });
+    }
+  }
 
   render() {
 
-    const { handleSubmit, handleSignUpVerifyCode, pristine, submitting, invalid } = this.props;
+    const { handleSubmit, onSubmit, pristine, submitting, invalid } = this.props;
 
     return (
-      <form onSubmit={handleSubmit(handleSignUpVerifyCode)}>
+      <div style={{ position: 'relative' }}>
+        { this.props.signUpVerifyCode.isFetching &&
+        <Loader style={{
+          zIndex: 5,
+          position: 'absolute', top: 0, bottom: 0, left: 0, right: 0
+        }} />
+        }
+        {
+          this.state.statusText &&
+          <div style={{ color: 'red', fontSize: 12, padding: 5, paddingBottom: 10 }}>
+            {this.state.statusText}
+          </div>
+        }
 
-        <Field name="verificationCode" component={TextField}
-               floatingLabelText="Code de vérification"
-               fullWidth={true}
-               floatingLabelFixed={true}
-               inputStyle={{ marginLeft: 4, marginTop: 4, fontSize: '14px' }}
-               floatingLabelStyle={{ top: 24, fontFamily: 'Lobster' }}
-               floatingLabelFocusStyle={{ top: 24, fontFamily: 'Lobster' }}
-               errorStyle={{ marginTop: 6, textAlign: 'left' }}
-               style={{ height: 58 }}
-               ref="verificationCode" withRef />
+        <form onSubmit={handleSubmit(onSubmit)}>
 
-        <RaisedButton
-          type="submit"
-          label="Confirmez votre code"
-          disabled={pristine || submitting || invalid}
-          backgroundColor="#345d79"
-          labelColor="white"
-          fullWidth={true}
-          labelStyle={{ fontFamily: 'Lobster', textTransform: 'none' }}
-          style={{ marginTop: 10, height: 44 }}
-        />
+          <Field name="verificationCode" component={TextField}
+                 floatingLabelText="Code de vérification"
+                 fullWidth={true}
+                 floatingLabelFixed={true}
+                 inputStyle={{ marginLeft: 4, marginTop: 4, fontSize: '14px' }}
+                 floatingLabelStyle={{ top: 24, fontFamily: 'Lobster' }}
+                 floatingLabelFocusStyle={{ top: 24, fontFamily: 'Lobster' }}
+                 errorStyle={{ marginTop: 6, textAlign: 'left' }}
+                 style={{ height: 58 }}
+                 ref="verificationCode" withRef />
 
-      </form>
+          <RaisedButton
+            type="submit"
+            label="Confirmez votre code"
+            disabled={pristine || submitting || invalid}
+            backgroundColor="#345d79"
+            labelColor="white"
+            fullWidth={true}
+            labelStyle={{ fontFamily: 'Lobster', textTransform: 'none' }}
+            style={{ marginTop: 10, height: 44 }}
+          />
+
+        </form>
+
+      </div>
     )
   }
 
