@@ -69,6 +69,8 @@ class MapView extends React.Component {
                 loginUser={this.props.actions.loginUser.bind(this)}
                 signUpUser={this.props.actions.signUpUser.bind(this)}
                 signUpUserVerifyCode={this.props.actions.signUpUserVerifyCode.bind(this)}
+                clearSignUpUser={this.props.actions.clearSignUpUser.bind(this)}
+                clearSignUpUserVerifyCode={this.props.actions.clearSignUpUserVerifyCode.bind(this)}
               />
             }
             iconStyleRight={{ margin: 0, padding: 0 }}

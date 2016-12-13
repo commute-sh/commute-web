@@ -7,6 +7,7 @@ import { push } from 'react-router-redux'
 /// Constants
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
+export const SIGN_UP_USER_CLEAR = 'SIGN_UP_USER_CLEAR';
 export const SIGN_UP_USER_REQUEST = 'SIGN_UP_USER_REQUEST';
 export const SIGN_UP_USER_FAILURE = 'SIGN_UP_USER_FAILURE';
 export const SIGN_UP_USER_SUCCESS = 'SIGN_UP_USER_SUCCESS';
@@ -20,6 +21,8 @@ export function signUpUser (username, email, password, givenName, familyName, re
   return function (dispatch) {
     dispatch(signUpUserRequest());
 
+    const user = { username, email, password, givenName, familyName };
+
     return fetch('/auth/sign-up', {
       method: 'post',
       credentials: 'same-origin',
@@ -27,12 +30,12 @@ export function signUpUser (username, email, password, givenName, familyName, re
         'Accept': 'application/json',
         'Content-Type': 'application/json'
       },
-      body: JSON.stringify({ username: username, email: email, password: password, givenName: givenName, familyName: familyName })
+      body: JSON.stringify(user)
     })
       .then(checkHttpStatus)
       .then(parseJSONWithDates)
       .then(response => {
-        dispatch(signUpUserSuccess(response));
+        dispatch(signUpUserSuccess(response, user));
         dispatch(push(redirect))
       })
       .catch(err => {
@@ -48,9 +51,16 @@ export function signUpUser (username, email, password, givenName, familyName, re
   }
 }
 
-export function signUpUserSuccess () {
+export function clearSignUpUser () {
   return {
-    type: SIGN_UP_USER_SUCCESS
+    type: SIGN_UP_USER_CLEAR
+  }
+}
+
+export function signUpUserSuccess (response, user) {
+  return {
+    type: SIGN_UP_USER_SUCCESS,
+    payload: { user }
   }
 }
 
@@ -68,7 +78,8 @@ export function signUpUserRequest () {
 }
 
 export const actions = {
-  signUpUser
+  signUpUser,
+  clearSignUpUser
 };
 
 
@@ -79,26 +90,36 @@ export const actions = {
 const initialState =  {
   isFetching: false,
   failed: false,
-  errMessage: undefined
+  done: false,
+  errMessage: undefined,
+  user: undefined
 };
 
 const ACTION_HANDLERS = {
+  [SIGN_UP_USER_CLEAR]: (state, event) => {
+    return Object.assign({}, initialState)
+  },
   [SIGN_UP_USER_REQUEST]: (state, event) => {
     return Object.assign({}, state, {
       isFetching: true,
       failed: false,
-      errMessage: undefined
+      done: false,
+      errMessage: undefined,
+      user: undefined
     })
   },
-  [SIGN_UP_USER_SUCCESS]: (state, event) => {
+  [SIGN_UP_USER_SUCCESS]: (state, { payload: { user } } = event) => {
     return Object.assign({}, state, {
-      isFetching: false
+      isFetching: false,
+      done: true,
+      user
     })
   },
   [SIGN_UP_USER_FAILURE]: (state, { payload: { err: { response, message, body } } } = event) => {
     return Object.assign({}, state, {
       isFetching: false,
       failed: true,
+      done: true,
       errMessage:
         body && body.message ?
           body.message :

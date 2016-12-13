@@ -39,7 +39,9 @@ class Login extends Component {
       errMessage: PropTypes.string
     }),
     signUpUser: PropTypes.func,
-    verifyUserSignUp: PropTypes.func
+    verifyUserSignUp: PropTypes.func,
+    clearSignUpUser: PropTypes.func,
+    clearSignUpUserVerifyCode: PropTypes.func
   };
 
   state = {
@@ -51,6 +53,7 @@ class Login extends Component {
   };
 
   onSignUpButtonTap() {
+    this.props.clearSignUpUser();
     this.setState({ loginPopOverOpen: false, signUpDialogOpen: true });
   };
 
@@ -60,6 +63,20 @@ class Login extends Component {
       !this.props.userInfos.isLoggedIn && nextProps.userInfos.isLoggedIn
     ) {
       this.setState({ loginPopOverOpen: false });
+    }
+
+    if (
+      this.props.signUp.isFetching && !nextProps.signUp.isFetching &&
+      nextProps.signUp.done && !nextProps.signUp.failed
+    ) {
+      this.onSignUpDialogClose(true);
+    }
+
+    if (
+      this.props.signUpVerifyCode.isFetching && !nextProps.signUpVerifyCode.isFetching &&
+      nextProps.signUpVerifyCode.done && !nextProps.signUpVerifyCode.failed
+    ) {
+      this.onSignUpVerifyCodeDialogClose(true);
     }
   }
 
@@ -75,18 +92,21 @@ class Login extends Component {
 
   onSignUpVerificationCodeSubmit({ verificationCode } = values) {
 
-    console.log("verificationCode:", verificationCode);
+    const { signUp: { user: { username } } } = this.props;
 
-    this.props.signUpUserVerifyCode(this.state.signUpUser.username, verificationCode);
-    this.setState({ signUpVerificationCodeDialogOpen: false, signUpConfirmDialogOpen: true });
+    console.log("verificationCode:", verificationCode);
+    console.log("username:", username);
+
+    this.props.signUpUserVerifyCode(username, verificationCode);
   };
 
   onSignUpDialogClose(buttonClicked) {
+    this.props.clearSignUpUserVerifyCode();
     this.setState({ signUpDialogOpen: false, signUpVerificationCodeDialogOpen: buttonClicked });
   };
 
   onSignUpVerifyCodeDialogClose(buttonClicked) {
-    this.setState({ signUpDialogOpen: false, signUpConfirmDialogOpen: buttonClicked });
+    this.setState({ signUpVerificationCodeDialogOpen: false, signUpConfirmDialogOpen: buttonClicked });
   };
 
   onSignUpConfirmDialogClose() {
@@ -180,13 +200,14 @@ class Login extends Component {
 
   renderSignUpConfirmDialog() {
 
-    const { signUpConfirmOpen } = this.state;
+    const { signUpConfirmDialogOpen } = this.state;
 
     return (
       <ConfirmDialog
+        okLabel="Ok"
         title="Confirmation de création de compte"
         message="Votre compte a été créé, vous pouvez maintenant vous connecter !"
-        open={signUpConfirmOpen}
+        open={signUpConfirmDialogOpen}
         onClose={this.onSignUpConfirmDialogClose.bind(this)}
       />
     );

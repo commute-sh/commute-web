@@ -7,6 +7,7 @@ import { push } from 'react-router-redux'
 /// Constants
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
+export const SIGN_UP_USER_VERIFY_CODE_CLEAR = 'SIGN_UP_USER_VERIFY_CODE_CLEAR';
 export const SIGN_UP_USER_VERIFY_CODE_REQUEST = 'SIGN_UP_USER_VERIFY_CODE_REQUEST';
 export const SIGN_UP_USER_VERIFY_CODE_FAILURE = 'SIGN_UP_USER_VERIFY_CODE_FAILURE';
 export const SIGN_UP_USER_VERIFY_CODE_SUCCESS = 'SIGN_UP_USER_VERIFY_CODE_SUCCESS';
@@ -31,10 +32,9 @@ export function signUpUserVerifyCode (username, verificationCode, redirect = '/'
         'Accept': 'application/json',
         'Content-Type': 'application/json'
       },
-      body: JSON.stringify({ username: username, verificationCode: verificationCode })
+      body: JSON.stringify({ username, verificationCode })
     })
       .then(checkHttpStatus)
-      .then(parseJSONWithDates)
       .then((response) => {
         dispatch(signUpUserVerifyCodeSuccess(response));
         dispatch(push(redirect));
@@ -49,6 +49,12 @@ export function signUpUserVerifyCode (username, verificationCode, redirect = '/'
           dispatch(push(redirect));
         });
       })
+  }
+}
+
+export function clearSignUpUserVerifyCode () {
+  return {
+    type: SIGN_UP_USER_VERIFY_CODE_CLEAR
   }
 }
 
@@ -73,6 +79,7 @@ export function signUpUserVerifyCodeRequest () {
 
 
 export const actions = {
+  clearSignUpUserVerifyCode,
   signUpUserVerifyCode
 };
 
@@ -84,25 +91,32 @@ export const actions = {
 const initialState =  {
   isFetching: false,
   failed: false,
+  done: false,
   errMessage: null
 };
 
 const ACTION_HANDLERS = {
+  [SIGN_UP_USER_VERIFY_CODE_CLEAR]: (state, event) => {
+    return Object.assign({}, initialState)
+  },
   [SIGN_UP_USER_VERIFY_CODE_REQUEST]: (state, event) => {
     return Object.assign({}, state, {
       isFetching: true,
       failed: false,
+      done: false,
       errMessage: null
     })
   },
   [SIGN_UP_USER_VERIFY_CODE_SUCCESS]: (state, event) => {
     return Object.assign({}, state, {
-      isFetching: false
+      isFetching: false,
+      done: true
     })
   },
   [SIGN_UP_USER_VERIFY_CODE_FAILURE]: (state, { payload: { err: { response, message, body } } } = event) => {
     return Object.assign({}, state, {
       isFetching: false,
+      done: true,
       failed: true,
       errMessage:
         body && body.message ?
