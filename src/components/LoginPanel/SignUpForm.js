@@ -40,7 +40,7 @@ class SignUpForm extends Component {
 
   render() {
 
-    const { submitTitle, handleSubmit, pristine, submitting, invalid, signUp: { isFetching, errMessage }  } = this.props;
+    const { submitTitle, handleSubmit, pristine, submitting, invalid, signUp: { isFetching, errMessage } } = this.props;
 
     return (
       <div style={{ position: 'relative' }}>
