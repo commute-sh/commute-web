@@ -13,7 +13,7 @@ class LoginPanel extends Component {
   static propTypes = {
     login: PropTypes.shape({
       isFetching: PropTypes.bool,
-      statusText: PropTypes.string
+      errMessage: PropTypes.string
     }),
     onLoginSubmit: PropTypes.func,
     onSignUpButtonTap: PropTypes.func
@@ -21,7 +21,6 @@ class LoginPanel extends Component {
 
   render() {
     return (
-
       <div>
 
         <div style={{ fontFamily: 'Lobster', color: '#ccc', textAlign: 'center', padding: 20, fontSize: 20 }}>Se connecter</div>
@@ -44,7 +43,7 @@ class LoginPanel extends Component {
 
           <Paper zDepth={0} style={{ textAlign: 'center', padding: 6, flex: 1 }}>
 
-            <LoginForm onLoginSubmit={this.props.onLoginSubmit} login={this.props.login} />
+            <LoginForm submitTitle="Se connecter" onLoginSubmit={this.props.onLoginSubmit} login={this.props.login} />
 
             <RaisedButton
               label="Créer un compte"

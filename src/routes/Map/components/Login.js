@@ -23,20 +23,20 @@ class Login extends Component {
     loginUser: PropTypes.func,
     login: PropTypes.shape({
       isFetching: PropTypes.bool,
-      statusText: PropTypes.string
+      errMessage: PropTypes.string
     }),
     userInfos: PropTypes.shape({
       isFetching: PropTypes.bool,
       isLoggedIn: PropTypes.bool,
-      statusText: PropTypes.string
+      errMessage: PropTypes.string
     }),
     signUp: PropTypes.shape({
       isFetching: PropTypes.bool,
-      statusText: PropTypes.string
+      errMessage: PropTypes.string
     }),
     signUpVerifyCode: PropTypes.shape({
       isFetching: PropTypes.bool,
-      statusText: PropTypes.string
+      errMessage: PropTypes.string
     }),
     signUpUser: PropTypes.func,
     verifyUserSignUp: PropTypes.func
@@ -70,9 +70,7 @@ class Login extends Component {
   };
 
   onSignUpSubmit({ username, email, password, givenName, familyName } = values) {
-    const user = { username, email, givenName, familyName };
     this.props.signUpUser(username, email, password, givenName, familyName);
-    this.setState({ signUpVerificationCodeDialogOpen: true, signUpDialogOpen: false, signUpUser: user });
   };
 
   onSignUpVerificationCodeSubmit({ verificationCode } = values) {

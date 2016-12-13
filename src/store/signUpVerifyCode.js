@@ -36,43 +36,36 @@ export function signUpUserVerifyCode (username, verificationCode, redirect = '/'
       .then(checkHttpStatus)
       .then(parseJSONWithDates)
       .then((response) => {
-        try {
-          dispatch(signUpUserVerifyCodeSuccess(response));
-          dispatch(push(redirect))
-        } catch (e) {
-          dispatch(signUpUserVerifyCodeFailure({
-            response: {
-              status: 403,
-              statusText: 'Invalid token'
-            }
-          }));
-        }
+        dispatch(signUpUserVerifyCodeSuccess(response));
+        dispatch(push(redirect));
       })
-      .catch((error) => {
-        dispatch(signUpUserVerifyCodeFailure(error))
+      .catch((err) => {
+        err.response.json().then(payload => {
+          err.body = payload;
+          dispatch(signUpUserVerifyCodeFailure(err));
+          dispatch(push(redirect))
+        }).catch(err => {
+          dispatch(signUpUserVerifyCodeFailure(err));
+          dispatch(push(redirect));
+        });
       })
   }
 }
 
-export function signUpUserVerifyCodeSuccess (user) {
+export function signUpUserVerifyCodeSuccess () {
   return {
-    type: SIGN_UP_USER_VERIFY_CODE_SUCCESS,
-    payload: user
+    type: SIGN_UP_USER_VERIFY_CODE_SUCCESS
   }
 }
 
 export function signUpUserVerifyCodeFailure (err) {
   return {
     type: SIGN_UP_USER_VERIFY_CODE_FAILURE,
-    payload: {
-      status: err.response.status,
-      statusText: err.response.statusText
-    }
+    payload: { err }
   }
 }
 
 export function signUpUserVerifyCodeRequest () {
-  console.log('SIGN_UP_USER_VERIFY_CODE_REQUEST: ' + SIGN_UP_USER_VERIFY_CODE_REQUEST)
   return {
     type: SIGN_UP_USER_VERIFY_CODE_REQUEST
   }
@@ -90,29 +83,33 @@ export const actions = {
 
 const initialState =  {
   isFetching: false,
-  statusText: null
+  failed: false,
+  errMessage: null
 };
 
 const ACTION_HANDLERS = {
   [SIGN_UP_USER_VERIFY_CODE_REQUEST]: (state, event) => {
     return Object.assign({}, state, {
-      statusText: null,
-      isFetching: true
+      isFetching: true,
+      failed: false,
+      errMessage: null
     })
   },
   [SIGN_UP_USER_VERIFY_CODE_SUCCESS]: (state, event) => {
     return Object.assign({}, state, {
-      statusText: 'Vous avez vérifié votre compte avec succès.',
       isFetching: false
     })
   },
-  [SIGN_UP_USER_VERIFY_CODE_FAILURE]: (state, event) => {
-
-    const payload = event.payload;
-
+  [SIGN_UP_USER_VERIFY_CODE_FAILURE]: (state, { payload: { err: { response, message, body } } } = event) => {
     return Object.assign({}, state, {
-      statusText: `Verify Account Error: ${payload.status} ${payload.statusText}`,
-      isFetching: false
+      isFetching: false,
+      failed: true,
+      errMessage:
+        body && body.message ?
+          body.message :
+          response ?
+            `SignUpVerifyCode Error: ${response.status} - ${response.statusText}` :
+            message
     })
   }
 };

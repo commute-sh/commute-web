@@ -25,15 +25,11 @@ export function logoutUserSuccess () {
 export function logoutUserFailure (err) {
   return {
     type: LOGOUT_USER_FAILURE,
-    payload: {
-      status: err.response.status,
-      statusText: err.response.statusText
-    }
+    payload: { err }
   }
 }
 
 export function logoutUserRequest () {
-  console.log('LOGOUT_USER_REQUEST: ' + LOGOUT_USER_REQUEST)
   return {
     type: LOGOUT_USER_REQUEST
   }
@@ -50,30 +46,22 @@ export function logoutAndRedirect (redirect = '/') {
     })
       .then(checkHttpStatus)
       .then((response) => {
-        try {
-          dispatch(logoutUserSuccess(response));
-          dispatch(push(redirect));
-          dispatch(cleanUserInfos());
-        } catch (e) {
-          dispatch(logoutUserFailure({
-            response: {
-              status: 403,
-              statusText: 'Invalid token'
-            }
-          }));
-          dispatch(cleanUserInfos());
-        }
+        dispatch(logoutUserSuccess(response));
+        dispatch(cleanUserInfos());
+        dispatch(push(redirect));
       })
       .catch((err) => {
-        dispatch(logoutUserFailure({
-          response: {
-            status: 500,
-            statusText: err.message
-          }
-        }));
-        dispatch(push(redirect));
-        dispatch(cleanUserInfos());
-      });
+        err.response.json().then(payload => {
+          err.body = payload;
+          dispatch(logoutUserFailure(err));
+          dispatch(cleanUserInfos());
+          dispatch(push(redirect));
+        }).catch(err => {
+          dispatch(logoutUserFailure(err));
+          dispatch(cleanUserInfos());
+          dispatch(push(redirect));
+        });
+      })
   }
 }
 
@@ -88,26 +76,33 @@ export const actions = {
 
 const initialState =  {
   isFetching: false,
-  statusText: null
+  failed: false,
+  errMessage: null
 };
 
 const ACTION_HANDLERS = {
   [LOGOUT_USER_REQUEST]: (state, event) => {
     return Object.assign({}, state, {
       isFetching: true,
-      statusText: null
-    })
-  },
-  [LOGOUT_USER_FAILURE]: (state, event) => {
-    return Object.assign({}, state, {
-      isFetching: false,
-      statusText: 'La déconnexion a échoué.'
+      failed: false,
+      errMessage: null
     })
   },
   [LOGOUT_USER_SUCCESS]: (state, event) => {
     return Object.assign({}, state, {
+      isFetching: false
+    })
+  },
+  [LOGOUT_USER_FAILURE]: (state, { payload: { err: { response, message, body } } } = event) => {
+    return Object.assign({}, state, {
       isFetching: false,
-      statusText: 'Vous vous êtes déconnecté avec succès.'
+      failed: true,
+      errMessage:
+        body && body.message ?
+          body.message :
+          response ?
+            `Logout Error: ${response.status} - ${response.statusText}` :
+            message
     })
   }
 };

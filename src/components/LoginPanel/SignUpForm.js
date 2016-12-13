@@ -1,70 +1,64 @@
 import React, { Component, PropTypes } from 'react'
-import { reduxForm, Field } from 'redux-form'
+import { reduxForm, Field, SubmissionError } from 'redux-form'
 import { TextField } from 'redux-form-material-ui'
 import { RaisedButton } from 'material-ui'
-import { Loader } from './Loader'
+import Loader from './Loader'
+
+const sleep = ms => new Promise(resolve => setTimeout(resolve, ms));
 
 const validate = values => {
   const errors = {};
-  const requiredFields = [ 'username', 'email', 'password' ];
+  const requiredFields = [ 'username', 'password', 'email', 'givenName', 'familyName' ];
 
   requiredFields.forEach(field => {
     if (!values[ field ]) {
-      errors[ field ] = 'Required'
+      errors[ field ] = 'Required';
     }
   });
 
   if (values.email && !/^[A-Z0-9._%+-]+@[A-Z0-9.-]+\.[A-Z]{2,4}$/i.test(values.email)) {
-    errors.email = 'Adresse email invalide'
+    errors[ 'email' ] = `Email address is invalid`;
   }
 
   return errors;
 };
-
 
 class SignUpForm extends Component {
 
   static propTypes = {
     signUp: PropTypes.shape({
       isFetching: PropTypes.bool,
-      statusText: PropTypes.string
+      errMessage: PropTypes.string
     }),
-    handleSignUp: PropTypes.func
+    onSubmit: PropTypes.func,
+    submitTitle: PropTypes.string
   };
 
-  state = {
-    statusText: undefined
-  };
-
-  componentWillReceiveProps(nextProps) {
-    if (nextProps.signUp.statusText && this.state.submitted ) {
-      this.setState({ statusText: nextProps.signUp.statusText });
-    }
-    if (nextProps.signUp.isFetching) {
-      this.setState({ submitted: true });
-    }
+  onSubmit(values) {
+      this.props.onSubmit(values);
   }
 
   render() {
 
-    const { handleSubmit, handleSignUp, pristine, submitting, invalid } = this.props;
+    const { submitTitle, handleSubmit, pristine, submitting, invalid, signUp: { isFetching, errMessage }  } = this.props;
 
     return (
       <div style={{ position: 'relative' }}>
-        { this.props.signUp.isFetching &&
-        <Loader style={{
-          zIndex: 5,
-          position: 'absolute', top: 0, bottom: 0, left: 0, right: 0
-        }} />
+
+        { isFetching &&
+          <Loader style={{
+            zIndex: 5,
+            position: 'absolute', top: 0, bottom: 0, left: 0, right: 0
+          }} />
         }
-        {
-          this.state.statusText &&
+
+        { errMessage &&
           <div style={{ color: 'red', fontSize: 12, padding: 5, paddingBottom: 10 }}>
-            {this.state.statusText}
+            {errMessage}
           </div>
         }
 
-        <form onSubmit={handleSubmit(handleSignUp)}>
+        <form onSubmit={handleSubmit(this.onSubmit.bind(this))}>
 
           <Field name="username" component={TextField}
                  floatingLabelText="Username"
@@ -124,7 +118,7 @@ class SignUpForm extends Component {
 
           <RaisedButton
             type="submit"
-            label="Créer votre compte"
+            label={submitTitle}
             disabled={pristine || submitting || invalid}
             backgroundColor="#345d79"
             labelColor="white"
@@ -150,5 +144,5 @@ export default reduxForm({
     givenName: '',
     familyName: ''
   },
-  validate
+  validate: validate
 })(SignUpForm);

@@ -17,48 +17,37 @@ const validate = values => {
   return errors;
 };
 
-
 class LoginForm extends Component {
 
   static propTypes = {
+    submitTitle: PropTypes.string,
     login: PropTypes.shape({
       isFetching: PropTypes.bool,
-      statusText: PropTypes.string
+      errMessage: PropTypes.string
     }),
     onLoginSubmit: PropTypes.func
   };
 
-  state = {
-    statusText: undefined
-  };
-
-  componentWillReceiveProps(nextProps) {
-    if (nextProps.login.statusText && this.state.submitted ) {
-      this.setState({ statusText: nextProps.statusText });
-    }
-    if (nextProps.login.isFetching) {
-      this.setState({ submitted: true });
-    }
-  }
-
   render() {
 
-    const { handleSubmit, onLoginSubmit, pristine, submitting, invalid } = this.props;
+    const { submitTitle, handleSubmit, onLoginSubmit, pristine, submitting, invalid, login: { isFetching, errMessage } } = this.props;
 
     return (
       <div style={{ position: 'relative' }}>
-        { this.props.login.isFetching &&
+
+        { isFetching &&
           <Loader style={{
             zIndex: 5,
             position: 'absolute', top: 0, bottom: 0, left: 0, right: 0
           }} />
         }
-        {
-          this.state.statusText &&
+
+        { errMessage &&
             <div style={{ color: 'red', fontSize: 12, padding: 5, paddingBottom: 10 }}>
-              {this.state.statusText}
+              {errMessage}
             </div>
         }
+
         <form onSubmit={handleSubmit(onLoginSubmit)}>
           <Field name="username" component={TextField}
                  floatingLabelText="Identifiant"
@@ -85,7 +74,7 @@ class LoginForm extends Component {
 
           <RaisedButton
             type="submit"
-            label="Se connecter"
+            label={submitTitle}
             disabled={pristine || submitting || invalid}
             backgroundColor="#345d79"
             labelColor="white"

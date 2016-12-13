@@ -271,8 +271,26 @@ app.get('/auth/twitter/error', function (req, res, next) {
   res.send("Unable to access Twitter servers. Please check internet connection or try again later.");
 });
 
-app.post('/auth/login', passport.authenticate('local', { failureRedirect: '/login' }), function(req, res) {
-  res.redirect('/');
+app.post('/auth/login', function(req, res, next) {
+  passport.authenticate('local', function(err, user, info) {
+    console.log("[LOGIN] err[1]:", err);
+    if (err) {
+      // UserNotFoundException / UserNotConfirmedException
+      const errMessage = "L'authentication avec le couple identifiant / mot de passe a échoué";
+      res.status(401).send({ message: errMessage });
+    } else if (!user) {
+      res.status(401).send({ message: "L'authentication avec le couple identifiant / mot de passe a échoué" });
+    } else {
+      req.logIn(user, function(err) {
+        console.log("[LOGIN] err[2]:", err);
+        if (err) {
+          res.status(401).send({ message: "L'authentication avec le couple identifiant / mot de passe a échoué" });
+        } else {
+          res.status(200);
+        }
+      });
+    }
+  })(req, res, next);
 });
 
 app.post('/auth/logout', function (req, res, next) {
@@ -297,9 +315,11 @@ app.post('/auth/sign-up', function(req, res, next) {
   attributeList.push(createCognitoUserAttribute('family_name', familyName));
 
   createUserPool().signUp(username, password, attributeList, null, function(err, result) {
+    // InvalidParameterException
     if (err) {
       setTimeout(function() {
-        res.status(500).json({message: err.message});
+        console.log('[SIGN_UP][1] err:', err);
+        res.status(500).json({ message: err.message });
       }, 1000);
     } else {
       const cognitoUser = result.user;
@@ -323,7 +343,7 @@ app.post('/auth/sign-up/verify-code', function(req, res, next) {
     if (err) {
       console.log('err:', err);
       setTimeout(function() {
-        res.status(500).json({message: err.message});
+        res.status(500).json({ message: err.message });
       }, 1000);
     } else {
       console.log('callback result:', result);
@@ -417,7 +437,7 @@ function ensureAuthenticated(req, res, next) {
   if (req.isAuthenticated()) {
     return next();
   }
-  res.status(401).json({message: "Not authenticated"});
+  res.status(401).json({ message: "Utilisateur non authentifié" });
 }
 
 app.use('/graphql', expressGraphQL(req => ({
@@ -442,9 +462,9 @@ const paths = config.utils_paths
 // Apply Webpack HMR Middleware
 // ------------------------------------
 if (config.env === 'development') {
-  const compiler = webpack(webpackConfig)
+  const compiler = webpack(webpackConfig);
 
-  debug('Enable webpack dev and HMR middleware')
+  debug('Enable webpack dev and HMR middleware');
   app.use(require('webpack-dev-middleware')(compiler, {
     publicPath: webpackConfig.output.publicPath,
     contentBase: paths.client(),
@@ -453,14 +473,14 @@ if (config.env === 'development') {
     noInfo: config.compiler_quiet,
     lazy: false,
     stats: config.compiler_stats
-  }))
-  app.use(require('webpack-hot-middleware')(compiler))
+  }));
+  app.use(require('webpack-hot-middleware')(compiler));
 
   // Serve static assets from ~/src/static since Webpack is unaware of
   // these files. This middleware doesn't need to be enabled outside
   // of development since this directory will be copied into ~/dist
   // when the application is compiled.
-  app.use(express.static(paths.client('static')))
+  app.use(express.static(paths.client('static')));
 } else {
   debug(
     'Server is being run outside of live development mode, meaning it will ' +
@@ -468,12 +488,12 @@ if (config.env === 'development') {
     'do not need an application server for this and can instead use a web ' +
     'server such as nginx to serve your static files. See the "deployment" ' +
     'section in the README for more information on deployment strategies.'
-  )
+  );
 
   // Serving ~/dist by default. Ideally these files should be served by
   // the web server and not the app server, but this helps to demo the
   // server in production.
-  app.use(express.static(paths.dist()))
+  app.use(express.static(paths.dist()));
 }
 
 

@@ -20,29 +20,24 @@ export const FETCH_USER_INFOS_FAILURE = 'FETCH_USER_INFOS_FAILURE';
 export function fetchUserInfosSuccess (user) {
   return {
     type: FETCH_USER_INFOS_SUCCESS,
-    payload: user
+    payload: { user }
   }
 }
 
 export function fetchUserInfosFailure (err) {
   return {
     type: FETCH_USER_INFOS_FAILURE,
-    payload: {
-      status: err.response.status,
-      statusText: err.response.statusText
-    }
+    payload: { err }
   }
 }
 
 export function fetchUserInfosRequest () {
-  console.log('FETCH_USER_INFOS_REQUEST: ' + FETCH_USER_INFOS_REQUEST);
   return {
     type: FETCH_USER_INFOS_REQUEST
   }
 }
 
 export function cleanUserInfosRequest () {
-  console.log('CLEAN_USER_INFOS_REQUEST: ' + CLEAN_USER_INFOS_REQUEST);
   return {
     type: CLEAN_USER_INFOS_REQUEST
   }
@@ -54,7 +49,7 @@ export function cleanUserInfos (done) {
   }
 }
 
-export function fetchUserInfos (done) {
+export function fetchUserInfos (redirect = '/') {
   return function (dispatch) {
     dispatch(fetchUserInfosRequest());
 
@@ -64,23 +59,17 @@ export function fetchUserInfos (done) {
       .then(checkHttpStatus)
       .then(parseJSONWithDates)
       .then((response) => {
-        done && done();
-        try {
           dispatch(fetchUserInfosSuccess(response))
-        } catch (e) {
-          dispatch(fetchUserInfosFailure({
-            response: {
-              status: 403,
-              statusText: 'Invalid token'
-            }
-          }));
-          dispatch(push('/'));
-        }
       })
-      .catch((error) => {
-        done && done();
-        dispatch(fetchUserInfosFailure(error));
-        dispatch(push('/'));
+      .catch((err) => {
+        err.response.json().then(payload => {
+          err.body = payload;
+          dispatch(fetchUserInfosFailure(err));
+          dispatch(push(redirect))
+        }).catch(err => {
+          dispatch(fetchUserInfosFailure(err));
+          dispatch(push(redirect));
+        });
       });
   }
 }
@@ -97,7 +86,8 @@ export const actions = {
 
 const initialState =  {
   isFetching: false,
-  statusText: null,
+  failed: false,
+  errMessage: null,
   isLoggedIn: false,
   displayName: null,
   firstName: null,
@@ -115,34 +105,32 @@ const ACTION_HANDLERS = {
   [FETCH_USER_INFOS_REQUEST]: (state, event) => {
     return Object.assign({}, state, {
       isFetching: true,
-      statusText: null
+      failed: false,
+      errMessage: null
     });
   },
-  [FETCH_USER_INFOS_SUCCESS]: (state, event) => {
-
-    const payload = event.payload;
-
+  [FETCH_USER_INFOS_SUCCESS]: (state, { payload: { user } } = event) => {
     return Object.assign({}, state, {
       isFetching: true,
-      statusText: null,
       isLoggedIn: true,
-      displayName: payload.displayName,
-      firstName: payload.firstName,
-      lastName: payload.lastName,
-      email: payload.email,
-      photo: payload.photo,
-      roles: payload.roles
+      displayName: user.displayName,
+      firstName: user.firstName,
+      lastName: user.lastName,
+      email: user.email,
+      photo: user.photo,
+      roles: user.roles
     });
   },
-  [FETCH_USER_INFOS_FAILURE]: (state, event) => {
-
-    const payload = event.payload;
-
-    console.log('payload:', payload);
-
+  [FETCH_USER_INFOS_FAILURE]: (state, { payload: { err: { response, message, body } } } = event) => {
     return Object.assign({}, state, {
       isFetching: false,
-      statusText: `Authentication Error: ${payload.status} - ${payload.statusText}`,
+      failed: true,
+      errMessage:
+        body && body.message ?
+          body.message :
+          response ?
+            `UserInfos Error: ${response.status} - ${response.statusText}` :
+            message,
       isLoggedIn: false
     });
   }

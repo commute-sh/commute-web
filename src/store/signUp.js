@@ -31,44 +31,37 @@ export function signUpUser (username, email, password, givenName, familyName, re
     })
       .then(checkHttpStatus)
       .then(parseJSONWithDates)
-      .then((response) => {
-        try {
-          dispatch(signUpUserSuccess(response));
-          dispatch(push(redirect))
-        } catch (e) {
-          dispatch(signUpUserFailure({
-            response: {
-              status: 403,
-              statusText: 'Invalid token'
-            }
-          }));
-        }
+      .then(response => {
+        dispatch(signUpUserSuccess(response));
+        dispatch(push(redirect))
       })
-      .catch((error) => {
-        dispatch(signUpUserFailure(error))
+      .catch(err => {
+        err.response.json().then(payload => {
+          err.body = payload;
+          dispatch(signUpUserFailure(err));
+          dispatch(push(redirect))
+        }).catch(err => {
+          dispatch(signUpUserFailure(err));
+          dispatch(push(redirect))
+        });
       })
   }
 }
 
-export function signUpUserSuccess (user) {
+export function signUpUserSuccess () {
   return {
-    type: SIGN_UP_USER_SUCCESS,
-    payload: user
+    type: SIGN_UP_USER_SUCCESS
   }
 }
 
 export function signUpUserFailure (err) {
   return {
     type: SIGN_UP_USER_FAILURE,
-    payload: {
-      status: err.response.status,
-      statusText: err.response.statusText
-    }
+    payload: { err }
   }
 }
 
 export function signUpUserRequest () {
-  console.log('SIGN_UP_USER_REQUEST: ' + SIGN_UP_USER_REQUEST);
   return {
     type: SIGN_UP_USER_REQUEST
   }
@@ -85,29 +78,33 @@ export const actions = {
 
 const initialState =  {
   isFetching: false,
-  statusText: null
+  failed: false,
+  errMessage: undefined
 };
 
 const ACTION_HANDLERS = {
   [SIGN_UP_USER_REQUEST]: (state, event) => {
     return Object.assign({}, state, {
       isFetching: true,
-      statusText: null
+      failed: false,
+      errMessage: undefined
     })
   },
   [SIGN_UP_USER_SUCCESS]: (state, event) => {
     return Object.assign({}, state, {
-      isFetching: false,
-      statusText: 'Vous avez créé votre compte avec succès.'
+      isFetching: false
     })
   },
-  [SIGN_UP_USER_FAILURE]: (state, event) => {
-
-    const payload = event.payload;
-
+  [SIGN_UP_USER_FAILURE]: (state, { payload: { err: { response, message, body } } } = event) => {
     return Object.assign({}, state, {
       isFetching: false,
-      statusText: `Create Account Error: ${payload.status} ${payload.statusText}`
+      failed: true,
+      errMessage:
+        body && body.message ?
+          body.message :
+          response ?
+            `SignUp Error: ${response.status} - ${response.statusText}` :
+            message
     })
   }
 };

@@ -16,25 +16,20 @@ export const LOGIN_USER_SUCCESS = 'LOGIN_USER_SUCCESS';
 /// Actions
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
-export function loginUserSuccess (user) {
+export function loginUserSuccess () {
   return {
-    type: LOGIN_USER_SUCCESS,
-    payload: user
+    type: LOGIN_USER_SUCCESS
   }
 }
 
 export function loginUserFailure (err) {
   return {
     type: LOGIN_USER_FAILURE,
-    payload: {
-      status: err.response.status,
-      statusText: err.response.statusText
-    }
+    payload: { err }
   }
 }
 
 export function loginUserRequest () {
-  console.log('LOGIN_USER_REQUEST: ' + LOGIN_USER_REQUEST);
   return {
     type: LOGIN_USER_REQUEST
   }
@@ -55,21 +50,19 @@ export function loginUser (username, password, redirect = '/') {
     })
       .then(checkHttpStatus)
       .then((response) => {
-        try {
           dispatch(loginUserSuccess(response));
-          dispatch(push(redirect));
           dispatch(fetchUserInfos());
-        } catch (e) {
-          dispatch(loginUserFailure({
-            response: {
-              status: 403,
-              statusText: 'Invalid token'
-            }
-          }));
-        }
+        dispatch(push(redirect));
       })
-      .catch((error) => {
-        dispatch(loginUserFailure(error))
+      .catch((err) => {
+        err.response.json().then(payload => {
+          err.body = payload;
+          dispatch(loginUserFailure(err));
+          dispatch(push(redirect));
+        }).catch(err => {
+          dispatch(loginUserFailure(err));
+          dispatch(push(redirect));
+        });
       })
   }
 }
@@ -85,30 +78,33 @@ export const actions = {
 
 const initialState =  {
   isFetching: false,
-  statusText: null
+  failed: false,
+  errMessage: null
 };
 
 const ACTION_HANDLERS = {
   [LOGIN_USER_REQUEST]: (state, event) => {
     return Object.assign({}, state, {
       isFetching: true,
-      statusText: null
+      failed: false,
+      errMessage: null
     })
   },
   [LOGIN_USER_SUCCESS]: (state, event) => {
     return Object.assign({}, state, {
-      isFetching: false,
-      statusText: 'Vous vous êtes connecté avec succès.'
+      isFetching: false
     })
   },
-  [LOGIN_USER_FAILURE]: (state, event) => {
-
-    const payload = event.payload;
-
-    console.log('payload:', payload);
+  [LOGIN_USER_FAILURE]: (state, { payload: { err: { response, message, body } } } = event) => {
     return Object.assign({}, state, {
       isFetching: false,
-      statusText: `Authentication Error: ${payload.status} - ${payload.statusText}`
+      failed: true,
+      errMessage:
+        body && body.message ?
+          body.message :
+          response ?
+            `Login Error: ${response.status} - ${response.statusText}` :
+            message
     })
   }
 };

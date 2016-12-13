@@ -37,31 +37,23 @@ class SignUpVerificationCodeForm extends Component {
     statusText: undefined
   };
 
-  componentWillReceiveProps(nextProps) {
-    if (nextProps.signUpVerifyCode.statusText && this.state.submitted ) {
-      this.setState({ statusText: nextProps.signUpVerifyCode.statusText });
-    }
-    if (nextProps.signUpVerifyCode.isFetching) {
-      this.setState({ submitted: true });
-    }
-  }
-
   render() {
 
-    const { handleSubmit, onSubmit, pristine, submitting, invalid } = this.props;
+    const { handleSubmit, onSubmit, pristine, submitting, invalid, signUpVerifyCode: { isFetching, errMessage } } = this.props;
 
     return (
       <div style={{ position: 'relative' }}>
-        { this.props.signUpVerifyCode.isFetching &&
-        <Loader style={{
-          zIndex: 5,
-          position: 'absolute', top: 0, bottom: 0, left: 0, right: 0
-        }} />
+
+        { isFetching &&
+          <Loader style={{
+            zIndex: 5,
+            position: 'absolute', top: 0, bottom: 0, left: 0, right: 0
+          }} />
         }
-        {
-          this.state.statusText &&
+
+        { errMessage &&
           <div style={{ color: 'red', fontSize: 12, padding: 5, paddingBottom: 10 }}>
-            {this.state.statusText}
+            {errMessage}
           </div>
         }
 
