@@ -29,7 +29,7 @@ class StationList extends React.Component {
   render() {
     return (
       <List key="station-list">
-        {_.sampleSize(this.props.stations, 10).map((station, index) => (
+        {this.props.stations.map((station, index) => (
           <StationItem key={index} index={index} station={station} />
         ))}
       </List>
