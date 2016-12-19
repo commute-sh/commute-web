@@ -159,7 +159,7 @@ class VirtualList extends Component {
       <this.props.tagName {...props} style={{
         boxSizing: 'border-box',
         height: this.state.height,
-        paddingTop: this.state.bufferStart
+        paddingTop: this.state.bufferStart || 0
       }}>
         {this.state.items.map(this.props.renderItem)}
       </this.props.tagName>
