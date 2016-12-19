@@ -77,6 +77,7 @@ class MapView extends React.Component {
           />
 
           <LeftPanel
+            map={this.props.map}
             stations={this.props.map.stations}
             leftPanelOpen={this.state.leftPanelOpen}
             onLeftPanelToggle={this.onLeftPanelToggle.bind(this)}

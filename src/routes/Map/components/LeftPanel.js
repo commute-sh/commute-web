@@ -84,10 +84,10 @@ class LeftPanel extends React.Component {
 
           <Tabs contentContainerStyle={{ position: 'absolute', left: 0, top: 112, bottom: 0, width: 320 }} tabTemplateStyle={{ height: '100%' }}>
             <Tab icon={<ActionFavoriteBorder />} style={{ position: 'relative', height: '100%', maxHeight: '100%', overflowY: 'hidden' }}>
-              <FavoriteStationPanel stations={this.props.stations} />
+              <FavoriteStationPanel map={this.props.map} stations={this.props.stations} />
             </Tab>
             <Tab icon={<ActionSearch />} style={{ position: 'relative', height: '100%', maxHeight: '100%', overflowY: 'hidden' }}>
-              <StationSearchPanel stations={this.props.stations} />
+              <StationSearchPanel map={this.props.map} stations={this.props.stations} />
             </Tab>
           </Tabs>
 

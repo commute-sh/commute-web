@@ -9,26 +9,24 @@ import TextField from 'material-ui/TextField';
 
 class StationSearchField extends React.Component {
 
-  onChange() {
-
-  }
+  static propTypes = {
+    onChange: PropTypes.func
+  };
 
   render() {
-
     return (
-     <div style={{ margin: '0 20px 0px 20px' }}>
+     <div style={{ margin: '0 20px' }}>
 
        <TextField
          hintText="Nom de station"
          floatingLabelText="Recherche"
          fullWidth={true}
          style={{ width: '100%' }}
-         onChange={this.onChange.bind(this)}
+         onChange={this.props.onChange.bind(this)}
        />
 
       </div>
     );
-
   }
 }
 
