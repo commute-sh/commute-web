@@ -143,6 +143,7 @@
     "passport-twitter": "^1.0.4",
     "postcss-loader": "^1.1.0",
     "react": "^15.4.1",
+    "react-addons-shallow-compare": "^15.4.1",
     "react-dom": "^15.4.1",
     "react-fontawesome": "^1.4.0",
     "react-google-maps": "^6.0.1",

@@ -1,12 +1,9 @@
 import React, { PropTypes } from 'react';
 
-import { List } from 'material-ui/List';
 import StationItem from './StationItem';
 
-import _ from 'lodash'
-
 import { StationsType } from '../../../types';
-
+import VirtualList from './VirtualList';
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 /// Class
@@ -16,23 +13,26 @@ class StationList extends React.Component {
 
   static propTypes = {
     stations: StationsType.isRequired,
+    style: PropTypes.object
   };
 
-  constructor(props) {
-    super(props);
-
-    this.state = {
-      dataSource: [],
-    };
+  renderItem(station) {
+    return (
+      <StationItem key={station.number} station={station} style={{ height: 72 }} />
+    );
   }
 
   render() {
     return (
-      <List key="station-list">
-        {this.props.stations.map((station, index) => (
-          <StationItem key={index} index={index} station={station} />
-        ))}
-      </List>
+      <div ref="container" style={{ height: this.props.style.height, overflow: 'scroll' }}>
+        <VirtualList
+          container={this.refs.container}
+          items={this.props.stations}
+          renderItem={this.renderItem}
+          itemHeight={72}
+          itemBuffer={10}
+        />
+      </div>
     );
   }
 

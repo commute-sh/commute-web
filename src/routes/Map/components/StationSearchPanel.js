@@ -17,18 +17,12 @@ class StationSearchPanel extends React.Component {
   };
 
   render() {
-
     return (
       <div style={{ height: '100%', maxHeight: '100%' }}>
-
         <StationSearchField />
-        <div style={{ height: '100%', maxHeight: '100%', overflowY: 'scroll' }}>
-          <StationList stations={this.props.stations} />
-        </div>
-
+        <StationList style={{ height: 'calc(100% - 72px)' }} stations={this.props.stations} />
       </div>
     );
-
   }
 }
 

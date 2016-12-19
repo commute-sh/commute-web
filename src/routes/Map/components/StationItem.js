@@ -13,12 +13,11 @@ import { StationType } from '../../../types';
 class StationItem extends React.Component {
 
   static propTypes = {
-    index: PropTypes.number,
     station: StationType.isRequired,
+    style: PropTypes.object
   };
 
   render() {
-
     const { station } = this.props;
 
     return (
@@ -27,6 +26,7 @@ class StationItem extends React.Component {
         primaryText={station.name}
         insetChildren={true}
         leftAvatar={<Avatar src="http://www.material-ui.com/images/adhamdannaway-128.jpg" />}
+        style={this.props.style}
       />
     );
   }
