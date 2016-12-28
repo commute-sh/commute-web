@@ -16,6 +16,7 @@ const IntType = graphql.GraphQLInt
 const FloatType = graphql.GraphQLFloat
 const NonNull = graphql.GraphQLNonNull
 const EnumType = graphql.GraphQLEnumType
+const ListType = graphql.GraphQLList
 
 
 const StatusType = new EnumType({
@@ -34,6 +35,15 @@ const PositionType = new ObjectType({
   },
 });
 
+const ImageType = new ObjectType({
+  name: 'Image',
+  fields: {
+    uid: { type: new NonNull(IntType) },
+    width: { type: new NonNull(IntType) },
+    quality: { type: new NonNull(IntType) }
+  },
+});
+
 const StationType = new ObjectType({
   name: 'Station',
   fields: {
@@ -49,7 +59,8 @@ const StationType = new ObjectType({
     available_bike_stands: { type: new NonNull(IntType) },
     available_bikes: { type: new NonNull(IntType) },
     last_update: { type: new NonNull(StringType) },
-    distance: { type: IntType }
+    distance: { type: IntType },
+    images: { type: new ListType(ImageType) },
   },
 });
 

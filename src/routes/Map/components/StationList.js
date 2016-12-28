@@ -24,9 +24,9 @@ class StationList extends React.Component {
 
   render() {
     return (
-      <div ref="container" style={{ height: this.props.style.height, overflow: 'scroll' }}>
+      <div ref="station-list-container" style={{ height: this.props.style.height, overflow: 'scroll' }}>
         <VirtualList
-          container={this.refs.container}
+          container={this.refs['station-list-container']}
           items={this.props.stations}
           renderItem={this.renderItem}
           itemHeight={72}

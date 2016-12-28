@@ -67,6 +67,11 @@ export function fetchStations() {
               available_bikes
               last_update
               distance
+              images {
+                uid
+                width
+                quality
+              }
             }
           }
         `,

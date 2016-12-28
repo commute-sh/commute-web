@@ -1,11 +1,10 @@
 import React, { PropTypes } from 'react';
 
-import { List, ListItem } from 'material-ui/List';
-import ActionGrade from 'material-ui/svg-icons/action/grade';
-import Avatar from 'material-ui/Avatar';
-import { pinkA200 } from 'material-ui/styles/colors';
+import StationItem from './StationItem';
 
 import { StationsType } from '../../../types';
+
+import VirtualList from './VirtualList';
 
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -16,6 +15,7 @@ class FavoriteStationList extends React.Component {
 
   static propTypes = {
     stations: StationsType.isRequired,
+    style: PropTypes.object
   };
 
   constructor(props) {
@@ -24,6 +24,12 @@ class FavoriteStationList extends React.Component {
     this.state = {
       dataSource: []
     };
+  }
+
+  renderItem(station) {
+    return (
+      <StationItem key={station.number} station={station} style={{ height: 72 }} />
+    );
   }
 
   render() {
@@ -35,18 +41,18 @@ class FavoriteStationList extends React.Component {
     }
 
     return (
-      <List key="favorite-station-list">
-        {favoriteStations.map((stations, index) => (
-          <ListItem
-            key={stations.number}
-            primaryText={stations.name}
-            leftIcon={<ActionGrade color={pinkA200} />}
-            rightAvatar={<Avatar src="http://www.material-ui.com/images/chexee-128.jpg" />}
-          />
-        ))}
-      </List>
+      <div ref="favorite-station-list-container" style={{ height: this.props.style.height, overflow: 'scroll' }}>
+        <VirtualList
+          container={this.refs['favorite-station-list-container']}
+          items={favoriteStations}
+          renderItem={this.renderItem}
+          itemHeight={72}
+          itemBuffer={10}
+        />
+      </div>
     );
   }
+
 
 }
 

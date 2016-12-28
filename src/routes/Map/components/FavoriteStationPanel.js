@@ -41,7 +41,7 @@ class FavoriteStationPanel extends React.Component {
         </div>
         }
 
-        <FavoriteStationList stations={stations} />
+        <FavoriteStationList style={{ height: 'calc(100% - 72px)' }} stations={stations} />
       </div>
     );
 
