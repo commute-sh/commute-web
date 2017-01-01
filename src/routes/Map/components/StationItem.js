@@ -19,7 +19,7 @@ class StationItem extends React.Component {
 
   render() {
     const { station } = this.props;
-    const images = (station.images || []).filter(image => image.width === 128);
+    const images = (station.images || []).filter(image => image.width === 128);
 
     const avatarUrl = images.length > 0 ?
       `https://s3-eu-west-1.amazonaws.com/image-commute-sh/contracts/${station.contract_name}/${station.contract_name}-${station.number}-${images[0].uid}-${images[0].width}-${images[0].quality}.jpg` :
