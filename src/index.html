@@ -7,6 +7,40 @@
   <link rel="stylesheet" type="text/css" href="//fonts.googleapis.com/css?family=Lobster" />
   <link rel="stylesheet" type="text/css" href="//fonts.googleapis.com/icon?family=Material+Icons" />
   <script src="https://maps.googleapis.com/maps/api/js?key=AIzaSyB3IcnuzojfGxcmiECfHrbwQIsMZhUmyvY"></script>
+  <style>
+    .ReactNavigationController {
+      position: absolute;
+      top: 64px;
+      bottom: 0;
+      left: 0;
+      right: 0;
+    }
+
+    .ReactNavigationControllerView,
+    .ReactNavigationControllerViewContent {
+      position: absolute;
+      top: 0;
+      right: 0;
+      bottom: 0;
+      left: 0;
+    }
+
+    .ReactNavigationControllerView {
+      display: -webkit-flex;
+      display: -ms-flexbox;
+      display: flex;
+    }
+
+    .ReactNavigationControllerViewContent {
+      color: white;
+      display: -webkit-flex;
+      display: -ms-flexbox;
+      display: flex;
+      -webkit-flex-direction: column;
+      -ms-flex-direction: column;
+      flex-direction: column;
+    }
+  </style>
 </head>
 <body>
   <div id="root" style="height: 100%"></div>

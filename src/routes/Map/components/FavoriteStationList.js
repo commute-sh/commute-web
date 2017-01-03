@@ -15,7 +15,8 @@ class FavoriteStationList extends React.Component {
 
   static propTypes = {
     stations: StationsType.isRequired,
-    style: PropTypes.object
+    style: PropTypes.object,
+    onSelectStation: PropTypes.func
   };
 
   constructor(props) {
@@ -28,7 +29,12 @@ class FavoriteStationList extends React.Component {
 
   renderItem(station) {
     return (
-      <StationItem key={station.number} station={station} style={{ height: 72 }} />
+      <StationItem
+        key={station.number}
+        station={station}
+        style={{ height: 72 }}
+        onSelectStation={this.props.onSelectStation}
+      />
     );
   }
 
@@ -45,7 +51,7 @@ class FavoriteStationList extends React.Component {
         <VirtualList
           container={this.refs['favorite-station-list-container']}
           items={favoriteStations}
-          renderItem={this.renderItem}
+          renderItem={this.renderItem.bind(this)}
           itemHeight={72}
           itemBuffer={10}
         />

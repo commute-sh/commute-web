@@ -13,12 +13,18 @@ class StationList extends React.Component {
 
   static propTypes = {
     stations: StationsType.isRequired,
-    style: PropTypes.object
+    style: PropTypes.object,
+    onSelectStation: PropTypes.func
   };
 
   renderItem(station) {
     return (
-      <StationItem key={station.number} station={station} style={{ height: 72 }} />
+      <StationItem
+        key={station.number}
+        station={station}
+        style={{ height: 72 }}
+        onSelectStation={this.props.onSelectStation}
+      />
     );
   }
 
@@ -28,7 +34,7 @@ class StationList extends React.Component {
         <VirtualList
           container={this.refs['station-list-container']}
           items={this.props.stations}
-          renderItem={this.renderItem}
+          renderItem={this.renderItem.bind(this)}
           itemHeight={72}
           itemBuffer={10}
         />

@@ -14,8 +14,13 @@ class StationItem extends React.Component {
 
   static propTypes = {
     station: StationType.isRequired,
-    style: PropTypes.object
+    style: PropTypes.object,
+    onSelectStation: PropTypes.func
   };
+
+  onSelectStation(station) {
+    this.props.onSelectStation(station);
+  }
 
   render() {
     const { station } = this.props;
@@ -39,6 +44,7 @@ class StationItem extends React.Component {
         insetChildren={true}
         leftAvatar={<Avatar src={avatarUrl} />}
         style={this.props.style}
+        onTouchTap={this.onSelectStation.bind(this, station)}
         {...stationProps}
       />
     );

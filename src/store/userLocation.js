@@ -40,9 +40,11 @@ export function initGeoLocation() {
 }
 
 export function disposeGeoLocation(watchID) {
+  return (dispatch, state) => {
     if (watchID) {
-        navigator.geolocation.clearWatch(watchID);
+      navigator.geolocation.clearWatch(watchID);
     }
+  };
 }
 
 

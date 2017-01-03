@@ -2,9 +2,14 @@ import React, { PropTypes } from 'react';
 
 import FavoriteStationList from './FavoriteStationList';
 
-import { StationsType } from '../../../types';
-
 import Loader from '../../../components/LoginPanel/Loader'
+
+import * as mapModule from '../modules/map'
+import * as userLocationModule from '../../../store/userLocation'
+
+
+import { connect } from 'react-redux'
+import { bindActionCreators } from 'redux'
 
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -14,24 +19,24 @@ import Loader from '../../../components/LoginPanel/Loader'
 class FavoriteStationPanel extends React.Component {
 
   static propTypes = {
-    stations: StationsType.isRequired,
-    map: PropTypes.shape({
-      isFetching: PropTypes.bool,
-      statusText: PropTypes.string
-    })
+    onSelectStation: PropTypes.func
   };
 
   render() {
 
-    const { stations, map: { isFetching, errMessage } } = this.props;
+    const { map: { isFetching, stations, errMessage } } = this.props;
+
+    console.log('------------------- props:', this.props);
+    console.log('------------------- isFetching:', isFetching);
 
     return (
-      <div style={{ height: 'calc(100% - 72px)', overflowY: 'scroll' }}>
+      <div style={{ height: '100%', overflowY: 'scroll' }}>
 
         { isFetching &&
         <Loader style={{
           zIndex: 5,
           position: 'absolute', top: 0, bottom: 0, left: 0, right: 0
+          , backgroundColor: 'red'
         }} />
         }
 
@@ -41,11 +46,29 @@ class FavoriteStationPanel extends React.Component {
         </div>
         }
 
-        <FavoriteStationList style={{ height: 'calc(100% - 72px)' }} stations={stations} />
+        <FavoriteStationList
+          style={{ height: 'calc(100% - 72px)' }}
+          stations={stations}
+          onSelectStation={this.props.onSelectStation.bind(this)}
+        />
       </div>
     );
 
   }
 }
 
-export default FavoriteStationPanel;
+const mapStateToProps = (state) => Object.assign({}, {
+  map: state.map,
+  userLocation: state.userLocation
+});
+
+const mapDispatchToProps = (dispatch) => ({
+  actions: bindActionCreators(
+    Object.assign({},
+      mapModule.actions,
+      userLocationModule.actions
+    ), dispatch
+  )
+});
+
+export default connect(mapStateToProps, mapDispatchToProps)(FavoriteStationPanel)

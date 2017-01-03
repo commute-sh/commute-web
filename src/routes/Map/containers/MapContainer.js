@@ -23,7 +23,6 @@ const mapStateToProps = (state) => Object.assign({}, {
   login: state.login,
   logout: state.logout,
   signUp: state.signUp,
-  userLocationModule: state.userLocation,
   signUpVerifyCode: state.signUpVerifyCode,
   userInfos: state.userInfos,
   userLocation: state.userLocation

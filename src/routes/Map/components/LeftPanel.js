@@ -1,26 +1,25 @@
-import React, { PropTypes } from 'react';
+import React, { Component, PropTypes } from 'react';
 
 import { commute500 } from '../../../themes/commuteColors';
 import AppBar from 'material-ui/AppBar';
 import Paper from 'material-ui/Paper';
 import IconButton from 'material-ui/IconButton';
-import {Tabs, Tab} from 'material-ui/Tabs';
 
 import Close from 'material-ui/svg-icons/navigation/close';
 import ActionSearch from 'material-ui/svg-icons/action/search';
 import ActionFavoriteBorder from 'material-ui/svg-icons/action/favorite-border';
 
-import FavoriteStationPanel from './FavoriteStationPanel'
-import StationSearchPanel from './StationSearchPanel'
-
 import { StationsType } from '../../../types';
+import NavigationController from 'react-navigation-controller';
+
+import LeftPanelTabs from './LeftPanelTabs';
 
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 /// Class
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
-class LeftPanel extends React.Component {
+class LeftPanel extends Component {
 
   static propTypes = {
     leftPanelOpen: PropTypes.bool.isRequired,
@@ -83,14 +82,7 @@ class LeftPanel extends React.Component {
             }
           />
 
-          <Tabs contentContainerStyle={{ position: 'absolute', left: 0, top: 112, bottom: 0, width: 320 }} tabTemplateStyle={{ height: '100%' }}>
-            <Tab icon={<ActionFavoriteBorder />} style={{ position: 'relative', height: '100%', maxHeight: '100%', overflowY: 'hidden' }}>
-              <FavoriteStationPanel map={this.props.map} stations={this.props.stations} />
-            </Tab>
-            <Tab icon={<ActionSearch />} style={{ position: 'relative', height: '100%', maxHeight: '100%', overflowY: 'hidden' }}>
-              <StationSearchPanel userLocation={this.props.userLocation} map={this.props.map} stations={this.props.stations} />
-            </Tab>
-          </Tabs>
+          {this.renderNavigationController()}
 
         </Paper>
 
@@ -98,6 +90,39 @@ class LeftPanel extends React.Component {
 
     );
 
+  }
+
+  renderNavigationController() {
+    const props = {
+      // The views to place in the stack. The front-to-back order
+      // of the views in this array represents the new bottom-to-top
+      // order of the navigation stack. Thus, the last item added to
+      // the array becomes the top item of the navigation stack.
+      // NOTE: This can only be updated via `setViews()`
+      views: [
+        <LeftPanelTabs />
+      ],
+
+      // If set to true, the navigation will save the state of each view that
+      // pushed onto the stack. When `popView()` is called, the navigationController
+      // will rehydrate the state of the view before it is shown.
+      // Defaults to false
+      // NOTE: This can only be updated via `setViews()`
+      preserveState: true,
+
+      // The spring tension for transitions
+      // http://facebook.github.io/rebound-js/docs/rebound.html
+      // Defaults to 10
+      transitionTension: 12,
+
+      // The spring friction for transitions
+      // Defaults to 6
+      transitionFriction: 5
+    };
+
+    return (
+      <NavigationController {...props} />
+    );
   }
 
 }

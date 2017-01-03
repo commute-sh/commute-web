@@ -3,11 +3,18 @@ import React, { PropTypes } from 'react';
 import StationSearchField from './StationSearchField';
 import StationList from './StationList';
 
-import { StationsType } from '../../../types';
 import Loader from '../../../components/LoginPanel/Loader'
 
 import { removeDiacritics } from '../../../utils';
 import GeoPoint from 'geopoint';
+
+import * as mapModule from '../modules/map'
+import * as userLocationModule from '../../../store/userLocation'
+
+
+import { connect } from 'react-redux'
+import { bindActionCreators } from 'redux'
+
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 /// Class
@@ -16,11 +23,7 @@ import GeoPoint from 'geopoint';
 class StationSearchPanel extends React.Component {
 
   static propTypes = {
-    stations: StationsType.isRequired,
-    map: PropTypes.shape({
-      isFetching: PropTypes.bool,
-      statusText: PropTypes.string
-    })
+    onSelectStation: PropTypes.func
   };
 
   state = {
@@ -28,7 +31,7 @@ class StationSearchPanel extends React.Component {
   };
 
   componentWillReceiveProps(nextProps, nextState) {
-    let allStations = nextProps.stations.map(station => {
+    let allStations = nextProps.map.stations.map(station => {
 
       station.cleanedName = removeDiacritics(station.name.toUpperCase());
 
@@ -86,10 +89,28 @@ class StationSearchPanel extends React.Component {
         }
 
         <StationSearchField onChange={this.onChange.bind(this)} />
-        <StationList style={{ height: 'calc(100% - 72px)' }} stations={stations} />
+        <StationList
+          style={{ height: 'calc(100% - 71px)' }}
+          stations={stations}
+          onSelectStation={this.props.onSelectStation.bind(this)}
+        />
       </div>
     );
   }
 }
 
-export default StationSearchPanel;
+const mapStateToProps = (state) => Object.assign({}, {
+  map: state.map,
+  userLocation: state.userLocation
+});
+
+const mapDispatchToProps = (dispatch) => ({
+  actions: bindActionCreators(
+    Object.assign({},
+      mapModule.actions,
+      userLocationModule.actions
+    ), dispatch
+  )
+});
+
+export default connect(mapStateToProps, mapDispatchToProps)(StationSearchPanel)
