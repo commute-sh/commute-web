@@ -28,8 +28,8 @@ class Map extends React.Component {
 
     const parisCenter = { lat: 48.8534100, lng: 2.3488000 };
 
-//    const center = coords ? { lat: coords.latitude, lng: coords.longitude } : { lat: 48.8145818, lng: 2.4585065 };
-    const center = geoLocation ? { lat: geoLocation.latitude(), lng: geoLocation.longitude() } : parisCenter;
+//    const center = coords ? { lat: coords.latitude, lng: coords.longitude } : { lat: 48.8145818, lng: 2.4585065 };
+    const center = geoLocation ? { lat: geoLocation.latitude(), lng: geoLocation.longitude() } : parisCenter;
 
     console.log("Center:", center);
 
