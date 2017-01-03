@@ -46,6 +46,13 @@ class MapView extends React.Component {
   componentDidMount() {
     this.props.actions.fetchUserInfos();
     this.props.actions.fetchStations();
+    this.watchID = this.props.actions.initGeoLocation();
+  }
+
+  componentWillUnmount() {
+    if (this.watchID) {
+      this.props.actions.disposeGeoLocation(this.watchID);
+    }
   }
 
   render() {
@@ -78,12 +85,14 @@ class MapView extends React.Component {
 
           <LeftPanel
             map={this.props.map}
+            userLocation={this.props.userLocation}
             stations={this.props.map.stations}
             leftPanelOpen={this.state.leftPanelOpen}
             onLeftPanelToggle={this.onLeftPanelToggle.bind(this)}
           />
 
           <Map
+            userLocation={this.props.userLocation}
             stations={this.props.map.stations}
             leftPanelOpen={this.state.leftPanelOpen}
           />

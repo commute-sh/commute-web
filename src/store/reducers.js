@@ -5,10 +5,12 @@ import signUpReducer from './signUp'
 import signUpVerifyCodeReducer from './signUpVerifyCode'
 import userInfosReducer from './userInfos'
 import locationReducer from './location'
+import userLocationReducer from './userLocation'
 import { reducer as formReducer } from 'redux-form'
 
 export const makeRootReducer = (asyncReducers) => {
   return combineReducers({
+    userLocation: userLocationReducer,
     location: locationReducer,
     login: loginReducer,
     logout: logoutReducer,

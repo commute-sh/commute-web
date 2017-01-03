@@ -1,7 +1,11 @@
 import React, { PropTypes } from 'react';
-import { withGoogleMap, GoogleMap, Marker } from "react-google-maps";
+import { withGoogleMap, GoogleMap, Marker, Circle } from "react-google-maps";
 import MarkerClusterer from "react-google-maps/lib/addons/MarkerClusterer";
+import InfoBox from "react-google-maps/lib/addons/InfoBox";
 import _ from 'lodash';
+import UserLocationImage from '../assets/user-location-64.png';
+
+import { StationsType } from '../../../types';
 
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -12,34 +16,28 @@ class Map extends React.Component {
 
   static propTypes = {
     leftPanelOpen: PropTypes.bool.isRequired,
-    stations: PropTypes.arrayOf(PropTypes.shape({
-      number: PropTypes.number.isRequired,
-      name: PropTypes.string.isRequired,
-      address: PropTypes.string.isRequired,
-      position: PropTypes.shape({
-        lat: PropTypes.number.isRequired,
-        lng: PropTypes.number.isRequired,
-      }),
-      banking: PropTypes.boolean,
-      bonus: PropTypes.boolean,
-      status: PropTypes.string,
-      contract_name: PropTypes.string.isRequired,
-      bike_stands: PropTypes.number.isRequired,
-      available_bike_stands: PropTypes.number.isRequired,
-      available_bikes: PropTypes.number.isRequired,
-      last_update: PropTypes.object.isRequired,
-      distance: PropTypes.number,
-
-    })).isRequired,
+    stations: StationsType.isRequired,
+    userLocation: PropTypes.object
   };
 
   render() {
+
+    const { userLocation: { geoLocation } } = this.props;
+
+    console.log('geoLocation:', geoLocation);
+
+    const parisCenter = { lat: 48.8534100, lng: 2.3488000 };
+
+//    const center = coords ? { lat: coords.latitude, lng: coords.longitude } : { lat: 48.8145818, lng: 2.4585065 };
+    const center = geoLocation ? { lat: geoLocation.latitude(), lng: geoLocation.longitude() } : parisCenter;
+
+    console.log("Center:", center);
 
     const WithGoogleMap = withGoogleMap(props => (
       <GoogleMap
         ref={props.onMapLoad}
         defaultZoom={15}
-        defaultCenter={{ lat: 48.8145818, lng: 2.4585065 }}
+        defaultCenter={center}
         onClick={props.onMapClick}
         options={{
           streetViewControl: false,
@@ -49,6 +47,19 @@ class Map extends React.Component {
           }
         }}
       >
+        {center && (
+          <InfoBox
+            defaultPosition={new google.maps.LatLng(center.lat, center.lng)}
+            options={{ closeBoxURL: ``, enableEventPropagation: true }}
+          >
+              <img
+                alt='User Location'
+                className='user-location-img'
+                src={UserLocationImage}
+                style={{ width: 32, height: 32 }} />
+          </InfoBox>
+        )}
+
         <MarkerClusterer
           averageCenter
           enableRetinaIcons

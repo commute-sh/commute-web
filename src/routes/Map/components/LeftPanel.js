@@ -26,6 +26,7 @@ class LeftPanel extends React.Component {
     leftPanelOpen: PropTypes.bool.isRequired,
     onLeftPanelToggle: PropTypes.func.isRequired,
     stations: StationsType.isRequired,
+    userLocation: PropTypes.object
   };
 
   onOpenFavoriteStationPanel() {
@@ -87,7 +88,7 @@ class LeftPanel extends React.Component {
               <FavoriteStationPanel map={this.props.map} stations={this.props.stations} />
             </Tab>
             <Tab icon={<ActionSearch />} style={{ position: 'relative', height: '100%', maxHeight: '100%', overflowY: 'hidden' }}>
-              <StationSearchPanel map={this.props.map} stations={this.props.stations} />
+              <StationSearchPanel userLocation={this.props.userLocation} map={this.props.map} stations={this.props.stations} />
             </Tab>
           </Tabs>
 

@@ -39,6 +39,7 @@ export function fetchStationsFailed(err) {
 
 export function fetchStations() {
   return (dispatch, state) => {
+
     dispatch(fetchStationsRequest());
 
       return fetch('/graphql', {

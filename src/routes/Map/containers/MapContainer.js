@@ -6,6 +6,7 @@ import * as logoutModule from '../../../store/logout'
 import * as signUpModule from '../../../store/signUp'
 import * as signUpVerifyCodeModule from '../../../store/signUpVerifyCode'
 import * as userInfosModule from '../../../store/userInfos'
+import * as userLocationModule from '../../../store/userLocation'
 
 import { connect } from 'react-redux'
 import { bindActionCreators } from 'redux'
@@ -22,8 +23,10 @@ const mapStateToProps = (state) => Object.assign({}, {
   login: state.login,
   logout: state.logout,
   signUp: state.signUp,
+  userLocationModule: state.userLocation,
   signUpVerifyCode: state.signUpVerifyCode,
   userInfos: state.userInfos,
+  userLocation: state.userLocation
 });
 
 const mapDispatchToProps = (dispatch) => ({
@@ -34,7 +37,8 @@ const mapDispatchToProps = (dispatch) => ({
       logoutModule.actions,
       signUpModule.actions,
       signUpVerifyCodeModule.actions,
-      userInfosModule.actions
+      userInfosModule.actions,
+      userLocationModule.actions
     ), dispatch
   )
 });

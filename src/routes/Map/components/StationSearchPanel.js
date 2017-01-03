@@ -7,7 +7,7 @@ import { StationsType } from '../../../types';
 import Loader from '../../../components/LoginPanel/Loader'
 
 import { removeDiacritics } from '../../../utils';
-
+import GeoPoint from 'geopoint';
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 /// Class
@@ -28,10 +28,24 @@ class StationSearchPanel extends React.Component {
   };
 
   componentWillReceiveProps(nextProps, nextState) {
-    const allStations = nextProps.stations.map(station => {
-      station.cleanedName =  removeDiacritics(station.name.toUpperCase());
+    let allStations = nextProps.stations.map(station => {
+
+      station.cleanedName = removeDiacritics(station.name.toUpperCase());
+
+      if (!station.geoLocation) {
+        station.geoLocation = new GeoPoint(station.position.lat, station.position.lng);
+      }
+
+      if (nextProps.userLocation.geoLocation) {
+        station.distance = Number((nextProps.userLocation.geoLocation.distanceTo(station.geoLocation, true) * 1000).toFixed(3));
+      }
+
       return station;
+
     });
+
+    allStations = _.sortBy(allStations, nextProps.userLocation.geoLocation ? ['distance'] : ['name']);
+
     this.setState({ allStations: allStations, stations: allStations });
   }
 
