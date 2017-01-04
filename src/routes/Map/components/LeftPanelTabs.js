@@ -7,6 +7,7 @@ import ActionFavoriteBorder from 'material-ui/svg-icons/action/favorite-border';
 
 import FavoriteStationPanel from './FavoriteStationPanel'
 import StationSearchPanel from './StationSearchPanel'
+import StationDetailsPanel from './StationDetailsPanel'
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 /// Class
@@ -14,8 +15,9 @@ import StationSearchPanel from './StationSearchPanel'
 
 class LeftPanelTab extends Component {
 
-  onSelectStation() {
-    this.props.navigationController.pushView(<div>Station</div>, {});
+  onSelectStation(station) {
+    console.log('Station:', station);
+    this.props.navigationController.pushView(<StationDetailsPanel station={station} />, {});
   }
 
   render() {
