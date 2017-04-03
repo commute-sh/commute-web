@@ -19,7 +19,6 @@ class Login extends Component {
   static muiName = 'FlatButton';
 
   static propTypes = {
-    displayName: PropTypes.string,
     loginUser: PropTypes.func,
     login: PropTypes.shape({
       isFetching: PropTypes.bool,
@@ -39,7 +38,6 @@ class Login extends Component {
       errMessage: PropTypes.string
     }),
     signUpUser: PropTypes.func,
-    verifyUserSignUp: PropTypes.func,
     clearSignUpUser: PropTypes.func,
     clearSignUpUserVerifyCode: PropTypes.func
   };

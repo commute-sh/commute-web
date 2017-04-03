@@ -3,17 +3,12 @@ import React, { Component, PropTypes } from 'react';
 class StationMarkerView extends Component {
 
     static propTypes = {
-        key: PropTypes.string,
-        number: PropTypes.number,
         value: PropTypes.number,
-        station: PropTypes.object,
         pinSize: PropTypes.number,
         strokeColor: PropTypes.string,
-        bgColor: PropTypes.string,
         lineWidth: PropTypes.number,
         fontSize: PropTypes.number,
         fontWeight: PropTypes.string,
-        opacity: PropTypes.number,
         onPress: PropTypes.func,
         style: PropTypes.object
     };

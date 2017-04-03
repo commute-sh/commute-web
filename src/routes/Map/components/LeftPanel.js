@@ -23,9 +23,7 @@ class LeftPanel extends Component {
 
   static propTypes = {
     leftPanelOpen: PropTypes.bool.isRequired,
-    onLeftPanelToggle: PropTypes.func.isRequired,
-    stations: StationsType.isRequired,
-    userLocation: PropTypes.object
+    onLeftPanelToggle: PropTypes.func.isRequired
   };
 
   onOpenFavoriteStationPanel() {
