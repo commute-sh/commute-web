@@ -27,8 +27,8 @@ class StationItem extends React.Component {
     const images = (station.images || []).filter(image => image.width === 128);
 
     const avatarUrl = images.length > 0 ?
-      `https://s3-eu-west-1.amazonaws.com/image-commute-sh/contracts/${station.contract_name}/${station.contract_name}-${station.number}-${images[0].uid}-${images[0].width}-${images[0].quality}.jpg` :
-      `https://s3-eu-west-1.amazonaws.com/image-commute-sh/contracts/${station.contract_name}/${station.contract_name}-${1}-${128}-${100}.jpg`;
+      `http://image-commute-sh.s3-website-eu-west-1.amazonaws.com/contracts/${station.contract_name}/${station.contract_name}-${station.number}-${images[0].uid}-${images[0].width}-${images[0].quality}.jpg` :
+      `http://image-commute-sh.s3-website-eu-west-1.amazonaws.com/contracts/${station.contract_name}/${station.contract_name}-${1}-${128}-${100}.jpg`;
 
     const stationProps = {};
     if (station.distance) {

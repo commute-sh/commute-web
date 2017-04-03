@@ -64,8 +64,8 @@ class StationDetailsPanel extends Component {
   renderPhotoHeader() {
     const station = this.props.station || { name: ' ', address: ' ' };
 
-    const backgroundSourceUri = `https://s3-eu-west-1.amazonaws.com/image-commute-sh/contracts/${station.contract_name}/${station.contract_name}-${station.number}-1-${640}-${60}.jpg`;
-    const contractBackgroundSourceUri = `https://s3-eu-west-1.amazonaws.com/image-commute-sh/contracts/${station.contract_name}/${station.contract_name}-1-${640}-${60}.jpg`;
+    const backgroundSourceUri = `http://image-commute-sh.s3-website-eu-west-1.amazonaws.com/contracts/${station.contract_name}/${station.contract_name}-${station.number}-1-${640}-${60}.jpg`;
+    const contractBackgroundSourceUri = `http://image-commute-sh.s3-website-eu-west-1.amazonaws.com/contracts/${station.contract_name}/${station.contract_name}-1-${640}-${60}.jpg`;
 
     console.log("Photo URL:", backgroundSourceUri);
 
